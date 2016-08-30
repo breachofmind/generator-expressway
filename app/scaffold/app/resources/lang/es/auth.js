@@ -1,9 +1,9 @@
 module.exports = {
 
-    err_incorrect_password: "Incorrect password, please try again.",
-    err_user_missing: "Sorry, that user does not exist.",
+    err_incorrect_password: "Contraseña incorrecta. Por favor, pruebe de nuevo.",
+    err_user_missing: "En este momento, no existe ese usuario.",
 
-    logged_out: "Successfully logged out.",
+    logged_out: "Con éxito la sesión.",
 
-    button_submit: "Submit",
+    button_submit: "Enviar",
 };
