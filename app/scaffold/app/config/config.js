@@ -41,7 +41,7 @@ module.exports = function(system)
          * The server port.
          * @type number
          */
-        port: env.port | 8081,
+        port: env.port || 8081,
 
         /**
          * The server proxy url, if using a proxy.
