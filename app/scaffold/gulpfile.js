@@ -5,13 +5,14 @@ var concat      = require('gulp-concat');
 var autoprefix  = require('gulp-autoprefixer');
 var livereload  = require('gulp-livereload');
 var mvc         = require('express-mvc');
-var app         = mvc.init(__dirname+"/app/", ENV_CLI);
+var app         = mvc.init(__dirname+"/app/", ENV_CLI).bootstrap();
 var $           = mvc.Gulper.set(gulp);
 
 
 var FILES = $.collections({
     sass: ['base.scss','app.scss'],
     lib: [],
+    npm: ['angular/angular.min.js'],
     js: ['main.js'],
 });
 
@@ -31,6 +32,9 @@ gulp.task('sass', function()
 
 gulp.task('js:lib', function()
 {
+    gulp.src(FILES.npm)
+        .pipe(concat('npm.js'))
+        .pipe($.dest());
     gulp.src(FILES.lib)
         .pipe(concat('lib.js'))
         .pipe($.dest());

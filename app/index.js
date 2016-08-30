@@ -1,35 +1,31 @@
 var generators = require('yeoman-generator');
 var shortid = require('shortid');
 
+var input = {
+    questions: [
+        {type: 'input', name:'appName', default:'myApp',                message:"Application name"},
+        {type: 'input', name:'desc',    default:'Express MVC application',message:"Application description"},
+        {type: 'input', name:'appKey',  default:shortid.generate(),     message:"Unique application key"},
+        {type: 'input', name:'url',     default:"http://localhost",     message:"URL"},
+        {type: 'input', name:'port',    default:8081,                   message:"Port"},
+        {type: 'input', name:'db',      default:"localhost/expressmvc", message:"MongoDB Database URI"},
+        {type: 'confirm', name:'useNg', default:true,                   message:"Using Angular?"},
+    ],
+    answers: {}
+};
+
 module.exports = generators.Base.extend({
 
-    /**
-    * Copy the scaffold files to the user directory.
-    */
-    scaffold: function()
-    {
-        this.fs.copy(
-            this.templatePath('../scaffold'),
-            this.destinationPath()
-        );
-    },
+
 
     /**
     * Get the user configuration info.
     */
     prompting: function()
     {
-        var inputs = [
-          {type: 'input', name:'appName', default:'myApp',                message:"Application name"},
-          {type: 'input', name:'desc',    default:'Express MVC application',message:"Application description"},
-          {type: 'input', name:'appKey',  default:shortid.generate(),     message:"Unique application key"},
-          {type: 'input', name:'url',     default:"http://localhost",     message:"URL"},
-          {type: 'input', name:'port',    default:8081,                   message:"Port"},
-          {type: 'input', name:'db',      default:"localhost/expressmvc", message:"MongoDB Database URI"},
-        ];
+        return this.prompt(input.questions).then(function(answers) {
 
-        return this.prompt(inputs).then(function(answers) {
-
+            input.answers = answers;
             // Create the configuration file.
             this.fs.copyTpl(
                 this.templatePath('env.template'),
@@ -46,23 +42,38 @@ module.exports = generators.Base.extend({
         }.bind(this));
     },
 
-
-    installation: function()
+    /**
+     * Copy the scaffold files to the user directory.
+     */
+    writing: function()
     {
-        this.npmInstall([
-            'breachofmind/express-mvc'
-        ], {save: true});
+        this.fs.copy(
+            this.templatePath('../scaffold'),
+            this.destinationPath()
+        );
+    },
 
-        this.npmInstall([
+    install: function()
+    {
+        var prod = [
+            'breachofmind/express-mvc'
+        ];
+        if (input.answers.useNg) {
+            prod.push('angular');
+        }
+        var dev = [
             'gulp',
             'gulp-concat',
             'gulp-autoprefixer',
             'gulp-sass',
             'gulp-livereload',
-        ], {saveDev: true});
+        ];
+
+        this.npmInstall(prod, {save: true});
+        this.npmInstall(dev, {saveDev: true});
     },
 
-    done: function()
+    end: function()
     {
         console.log('Finished! Type npm run start.');
     }
