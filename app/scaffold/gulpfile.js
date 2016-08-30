@@ -8,7 +8,6 @@ var mvc         = require('express-mvc');
 var app         = mvc.init(__dirname+"/app/", ENV_CLI).bootstrap();
 var $           = mvc.Gulper.set(gulp);
 
-
 var FILES = $.collections({
     scss: ['base.scss','app.scss'],
     lib: [],
@@ -35,9 +34,13 @@ gulp.task('js:lib', function()
     gulp.src(FILES.npm)
         .pipe(concat('npm.js'))
         .pipe($.dest());
-    gulp.src(FILES.lib)
-        .pipe(concat('lib.js'))
-        .pipe($.dest());
+
+    if (FILES.lib.length) {
+        gulp.src(FILES.lib)
+            .pipe(concat('lib.js'))
+            .pipe($.dest());
+    }
+
     return true;
 });
 
@@ -55,12 +58,12 @@ gulp.task('watch', function()
     livereload.listen();
 
     var lrPaths = [
-        paths.views+'/**/*.ejs',
-        paths.js+'/**/*.js'
+        $.paths.views+'/**/*.ejs',
+        $.paths.js+'/**/*.js'
     ];
 
-    gulp.watch(paths.js   + '/**/*.js',     ['js:src']);
-    gulp.watch(paths.scss + '/**/*.scss',   ['sass']);
+    gulp.watch($.paths.js   + '/**/*.js',     ['js:src']);
+    gulp.watch($.paths.scss + '/**/*.scss',   ['sass']);
     gulp.watch(lrPaths, function(event) {
         gulp.src(event.path).pipe(livereload());
     });

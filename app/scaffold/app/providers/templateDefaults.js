@@ -15,8 +15,15 @@ class TemplateDefaultsProvider extends mvc.Provider
     {
         app.Template.defaults = function(view)
         {
-            this.style('foundation', "https://cdnjs.cloudflare.com/ajax/libs/foundation/6.2.3/foundation-flex.min.css");
             this.meta('viewport','width=device-width');
+
+            // Stylesheets
+            this.style('foundation', "https://cdnjs.cloudflare.com/ajax/libs/foundation/6.2.3/foundation-flex.min.css");
+            this.style('base', "/base.css");
+            this.style('css', "/app.css");
+
+            // Scripts
+            this.script('js', "/src.js");
         };
     }
 }
