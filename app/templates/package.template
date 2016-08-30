@@ -1,0 +1,10 @@
+{
+  "name": "<%=appName%>",
+  "version": "0.0.1",
+  "description": "<%=desc%>",
+  "main": "index.js",
+  "license": "ISC",
+  "scripts": {
+    "start" : "node index.js"
+  }
+}

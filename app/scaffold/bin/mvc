@@ -1,0 +1,34 @@
+#!/usr/local/bin/node
+var mvc = require('express-mvc');
+var app = mvc.init(__dirname+"/../app/", ENV_CLI).bootstrap();
+var cli = app.cli;
+
+/**
+ * Your actions are set up in an object.
+ */
+cli.actions({
+    mongo: function() {
+        app.logger.info('Starting MongoDB Server...');
+        cli.exec('mongod');
+    },
+
+    seed: function() {
+        app.logger.info('Running Seed Command...');
+        require('../app/db/seeder')(app.Seeder,app);
+    },
+
+    test: function() {
+        app.logger.info('Testing...');
+        cli.exec('mocha', ['test']);
+    },
+
+    routes: function() {
+        app.router.list().forEach(function(route) {
+            console.log(route);
+        });
+        process.exit(1);
+    }
+});
+
+
+cli.run();
