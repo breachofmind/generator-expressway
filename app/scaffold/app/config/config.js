@@ -71,12 +71,12 @@ module.exports = function(system)
          * Folders relative to the application path.
          * @type string
          */
-        resources_path:   "resources",
-        views_path:       "resources/views",
+        resources_path:   "../resources",
+        views_path:       "../resources/views",
         controllers_path: "controllers",
         models_path:      "models",
         providers_path:   "providers",
-        locales_path:     "resources/lang",
+        locales_path:     "../resources/lang",
         static_path:      "../public",
         logs_path:        "logs",
 
