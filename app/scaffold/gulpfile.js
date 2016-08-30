@@ -10,7 +10,7 @@ var $           = mvc.Gulper.set(gulp);
 
 
 var FILES = $.collections({
-    sass: ['base.scss','app.scss'],
+    scss: ['base.scss','app.scss'],
     lib: [],
     npm: ['angular/angular.min.js'],
     js: ['main.js'],

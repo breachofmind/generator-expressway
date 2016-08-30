@@ -77,7 +77,7 @@ module.exports = function(system)
         models_path:      "models",
         providers_path:   "providers",
         locales_path:     "resources/lang",
-        static_path:      "public",
+        static_path:      "../public",
         logs_path:        "logs",
 
         /**
