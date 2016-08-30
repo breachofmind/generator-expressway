@@ -54,7 +54,9 @@ module.exports = mvc.Controller.create('authController', function(app)
             }
 
             // Use passport to authenticate.
-            app.passport.authenticate('local', function(err,user,info)
+            var opts = {badRequestMessage:'auth.err_missing_credentials'};
+
+            app.passport.authenticate('local', opts, function(err,user,info)
             {
                 if (err) return next(err);
                 if (! user) return kill(info);
