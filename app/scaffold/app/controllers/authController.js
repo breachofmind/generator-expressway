@@ -48,13 +48,20 @@ module.exports = mvc.Controller.create('authController', function(app)
         {
             var isAjax = request.ajax;
 
-            function kill(info) {
-                request.flash('message', info.message);
-                return isAjax ? response.smart({success:false, error:info.message}) : response.redirect('/login');
+            /**
+             * Send in the event of an error.
+             * @param info object
+             * @returns {*}
+             */
+            function kill(info)
+            {
+                var message = request.lang(info.message);
+                request.flash('message', message);
+                return isAjax ? response.smart({success:false, error:message}) : response.redirect('/login');
             }
 
             // Use passport to authenticate.
-            var opts = {badRequestMessage:'auth.err_missing_credentials'};
+            var opts = {badRequestMessage: request.lang('auth.err_missing_credentials')};
 
             app.passport.authenticate('local', opts, function(err,user,info)
             {
