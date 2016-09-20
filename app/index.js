@@ -3,20 +3,18 @@ var shortid = require('shortid');
 
 var input = {
     questions: [
-        {type: 'input', name:'appName', default:'myApp',                message:"Application name"},
-        {type: 'input', name:'desc',    default:'Express MVC application',message:"Application description"},
+        {type: 'input', name:'appName', default:'myapp',                message:"Application name"},
+        {type: 'input', name:'desc',    default:'Expressway application',message:"Application description"},
         {type: 'input', name:'appKey',  default:shortid.generate(),     message:"Unique application key"},
         {type: 'input', name:'url',     default:"http://localhost",     message:"URL"},
         {type: 'input', name:'port',    default:8081,                   message:"Port"},
-        {type: 'input', name:'db',      default:"localhost/expressmvc", message:"MongoDB Database URI"},
+        {type: 'input', name:'db',      default:"localhost/expressway", message:"MongoDB Database URI"},
         {type: 'confirm', name:'useNg', default:true,                   message:"Using Angular?"},
     ],
     answers: {}
 };
 
 module.exports = generators.Base.extend({
-
-
 
     /**
     * Get the user configuration info.
@@ -56,8 +54,16 @@ module.exports = generators.Base.extend({
     install: function()
     {
         var prod = [
-            'breachofmind/express-mvc'
+            'csurf'
         ];
+
+        // Load the library only if it's not installed globally.
+        try {
+            require.resolve('expressway');
+        } catch(e) {
+            prod.push('breachofmind/expressway');
+        }
+
         if (input.answers.useNg) {
             prod.push('angular');
         }

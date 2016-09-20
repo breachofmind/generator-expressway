@@ -1,11 +1,14 @@
 "use strict";
-var mvc = require('express-mvc');
 
-module.exports = mvc.Controller.create('indexController', function(app)
+var expressway = require('expressway');
+
+module.exports = expressway.Controller.create('indexController', function(app)
 {
     return {
         index: function(request,response,next) {
-            return response.view('index');
+            return response
+                .view('index')
+                .set('title','Expressway');
         }
     }
 });

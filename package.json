@@ -1,7 +1,7 @@
 {
-  "name": "generator-mvc",
+  "name": "generator-expressway",
   "version": "1.0.0",
-  "description": "Express MVC scaffold",
+  "description": "Expressway framework Yeoman scaffold",
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -12,7 +12,11 @@
   "author": "Mike Adamczyk <mike@bom.us>",
   "license": "ISC",
   "keywords": [
-    "yeoman-generator"
+    "yeoman-generator",
+    "expressway",
+    "node",
+    "express",
+    "mongodb"
   ],
   "dependencies": {
     "shortid": "^2.2.6",

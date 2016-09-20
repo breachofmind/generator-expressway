@@ -1,22 +1,32 @@
-var mvc = require('express-mvc');
-var _ = require('lodash');
+"use strict";
 
-module.exports = mvc.Model.create('User', function Blueprint(app)
+var _ = require('lodash');
+var expressway = require('expressway');
+
+module.exports = expressway.Model.create('User', function Blueprint(app)
 {
+    var ObjectId = expressway.Model.types.ObjectId;
+
     this.title      = 'email';
     this.expose     = false;
     this.guarded    = ['password'];
-    this.labels     = {};
     this.appends    = ['name'];
     this.populate   = ['roles'];
     this.managed    = true;
+    this.labels     = {
+        email: "Username",
+        first_name: "First Name",
+        last_name: "Last Name",
+        name: "Name",
+        created_at: "Created Date"
+    };
 
     this.schema = {
-        email:          { type: String, required: true },
+        email:          { type: String, required: true, unique: true },
         password:       { type: String, required: true },
         first_name:     { type: String },
         last_name:      { type: String },
-        roles:          [{ type:mvc.Model.types.ObjectId, ref:"Role" }],
+        roles:          [{ type: ObjectId, ref:"Role" }],
         created_at:     { type: Date, default: Date.now },
         modified_at:    { type: Date, default: Date.now }
     };
@@ -69,6 +79,16 @@ module.exports = mvc.Model.create('User', function Blueprint(app)
         },
 
         /**
+         * Check if a user has a certain permission key.
+         * @param key string
+         * @returns {boolean}
+         */
+        hasPermission: function(key)
+        {
+            return this.permissions().indexOf(key) > -1;
+        },
+
+        /**
          * Return an array of this users permissions.
          * @returns {Array}
          */
@@ -85,13 +105,26 @@ module.exports = mvc.Model.create('User', function Blueprint(app)
          * Check if a user can perform an action.
          * @param object string
          * @param action string
-         * @returns {*}
+         * @param args mixed, optional
+         * @returns {boolean}
          */
-        can: function(object,action)
+        can: function(object,action, args)
         {
             if (! app.gate) return true;
 
-            return app.gate.check(this,object,action);
+            return app.gate.check(this,object,action,args);
+        },
+
+        /**
+         * Alias of can()
+         * @param object string
+         * @param action string
+         * @param args mixed, optional
+         * @returns {boolean}
+         */
+        cannot: function(object,action,args)
+        {
+            return ! this.can(object,action,args);
         }
     };
 });

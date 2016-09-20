@@ -1,7 +1,7 @@
 var _   = require('lodash');
-var mvc = require('express-mvc');
+var expressway = require('expressway');
 
-module.exports = mvc.Model.create('Role', function Blueprint(app)
+module.exports = expressway.Model.create('Role', function Blueprint(app)
 {
     this.title = 'name';
     this.expose = false;

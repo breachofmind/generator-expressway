@@ -1,11 +1,12 @@
-var mvc = require('express-mvc');
+var expressway = require('expressway');
 
-module.exports = mvc.Model.create('Media', function Blueprint(app)
+module.exports = expressway.Model.create('Media', function Blueprint(app)
 {
     this.title      = 'title';
     this.expose     = true;
     this.guarded    = [];
     this.appends    = [];
+    this.populate   = [];
     this.labels     = {
         title:     "Title",
         file_name: "File Name",
@@ -13,7 +14,7 @@ module.exports = mvc.Model.create('Media', function Blueprint(app)
         alt_text:  "Alt Text",
         caption:   "Caption"
     };
-    this.populate   = [];
+
 
     this.schema = {
         title:       { type: String, required: true },

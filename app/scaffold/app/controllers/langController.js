@@ -1,4 +1,6 @@
-var mvc = require('express-mvc');
-var defaults = mvc.Provider.get('controllerDefaults');
+"use strict";
 
-module.exports = mvc.Controller.create('langController', defaults.Locales.controller);
+var expressway = require('expressway');
+var defaults = expressway.Provider.get('controllerDefaults');
+
+module.exports = expressway.Controller.create('langController', defaults.Locales.controller);

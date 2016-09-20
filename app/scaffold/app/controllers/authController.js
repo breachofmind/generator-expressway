@@ -1,10 +1,15 @@
 "use strict";
-var mvc = require('express-mvc');
+
+var expressway = require('expressway');
 var csrf = require('csurf');
 
-module.exports = mvc.Controller.create('authController', function(app)
+module.exports = expressway.Controller.create('authController', function(app)
 {
     this.middleware(csrf());
+
+    var loginUri   = "/login";
+    var successUri = "/";
+
 
     return {
         /**
@@ -15,9 +20,11 @@ module.exports = mvc.Controller.create('authController', function(app)
         login: function(request,response)
         {
             if (request.user) {
-                response.redirect('/');
+                response.redirect(successUri);
             }
-            return response.view('login')
+
+            return response
+                .view('login')
                 .set({title: "Login"})
                 .use({message: request.flash('message') || null});
         },
@@ -33,9 +40,12 @@ module.exports = mvc.Controller.create('authController', function(app)
                 app.logger.access('User logging out: %s', request.user.id);
             }
             request.logout();
-            request.flash('message', 'auth.logged_out');
+            request.flash('message', {
+                text:request.lang('auth.logged_out'),
+                type:'success'
+            });
 
-            response.redirect('/login');
+            response.redirect(loginUri);
         },
 
         /**
@@ -48,20 +58,21 @@ module.exports = mvc.Controller.create('authController', function(app)
         {
             var isAjax = request.ajax;
 
-            /**
-             * Send in the event of an error.
-             * @param info object
-             * @returns {*}
-             */
+            // Fires if there was an error...
             function kill(info)
             {
                 var message = request.lang(info.message);
-                request.flash('message', message);
-                return isAjax ? response.smart({success:false, error:message}) : response.redirect('/login');
+
+                request.flash('message', {
+                    text: message,
+                    type: 'alert'
+                });
+                return isAjax ? response.smart({success:false, error:message}) : response.redirect(loginUri);
             }
 
             // Use passport to authenticate.
-            var opts = {badRequestMessage: request.lang('auth.err_missing_credentials')};
+            // Messages are returned in locale format.
+            var opts = {badRequestMessage:'auth.err_missing_credentials'};
 
             app.passport.authenticate('local', opts, function(err,user,info)
             {
@@ -72,7 +83,7 @@ module.exports = mvc.Controller.create('authController', function(app)
                 {
                     if (err) return kill(info);
 
-                    return response.smart(isAjax ? {success:true, user:user, redirect:"/admin"} : response.redirect('/'), 200);
+                    return response.smart(isAjax ? {success:true, user:user, redirect:"/"} : response.redirect(successUri), 200);
                 });
 
             })(request,response,next);

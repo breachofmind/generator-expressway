@@ -1,8 +1,8 @@
 "use strict";
 
-var mvc = require('express-mvc');
+var expressway = require('expressway');
 var cp  = require('child_process');
-var app = mvc.init(__dirname + "/app/");
+var app = expressway.init(__dirname + "/app/");
 
 app.bootstrap().server(function() {
 

@@ -29,7 +29,7 @@ module.exports = function(system)
          * The database credentials.
          * @type string
          */
-        db: env.db || "mongodb://localhost/expressmvc",
+        db: env.db || "mongodb://localhost/expressway",
 
         /**
          * The server url.
@@ -106,7 +106,8 @@ module.exports = function(system)
             system.view,
 
             // Your providers here...
-            require('../providers/templateDefaults')
+            require('../providers/templateDefaults'),
+            require('../providers/gatePolicies'),
         ]
     }
 };
