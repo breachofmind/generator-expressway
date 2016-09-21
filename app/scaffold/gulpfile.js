@@ -4,9 +4,9 @@ var sass        = require('gulp-sass');
 var concat      = require('gulp-concat');
 var autoprefix  = require('gulp-autoprefixer');
 var livereload  = require('gulp-livereload');
-var mvc         = require('express-mvc');
-var app         = mvc.init(__dirname+"/app/", ENV_CLI).bootstrap();
-var $           = mvc.Gulper.set(gulp);
+var expressway  = require('expressway');
+var app         = expressway.init(__dirname+"/app/", ENV_CLI).bootstrap();
+var $           = expressway.BigGulp.set(gulp);
 
 var FILES = $.collections({
     scss: ['base.scss','app.scss'],
@@ -58,7 +58,7 @@ gulp.task('watch', function()
     livereload.listen();
 
     var lrPaths = [
-        $.paths.views+'/**/*.ejs',
+        $.paths.views+'/**/*.'+app.conf('view_engine','ejs'),
         $.paths.js+'/**/*.js'
     ];
 
@@ -69,4 +69,6 @@ gulp.task('watch', function()
     });
 });
 
-gulp.task('default', ['sass','js:lib','js:src']);
+gulp.task('default', ['sass','js:lib','js:src'], function() {
+    process.exit(1);
+});
