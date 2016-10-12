@@ -10,6 +10,14 @@
     "app"
   ],
   "author": "Mike Adamczyk <mike@bom.us>",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/breachofmind/generator-expressway.git"
+  },
+  "bugs": {
+    "url": "https://github.com/breachofmind/generator-expressway/issues"
+  },
+  "homepage": "https://github.com/breachofmind/generator-expressway#readme",
   "license": "ISC",
   "keywords": [
     "yeoman-generator",
@@ -19,6 +27,7 @@
     "mongodb"
   ],
   "dependencies": {
+    "lodash": "^4.16.4",
     "shortid": "^2.2.6",
     "yeoman-generator": "^0.24.1"
   }

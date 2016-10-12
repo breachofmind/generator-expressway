@@ -1,0 +1,11 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>${= data.template.title }</title>
+    <meta charset="UTF-8">
+    ${= data.template.get(['meta','link']) }
+</head>
+<body class="error-page">
+    @yield(content)
+</body>
+</html>

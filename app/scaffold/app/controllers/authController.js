@@ -1,94 +1,101 @@
 "use strict";
 
-var expressway = require('expressway');
+var Expressway = require('expressway');
 var csrf = require('csurf');
 
-module.exports = expressway.Controller.create('authController', function(app)
+class authController extends Expressway.Controller
 {
-    this.middleware(csrf());
+    constructor(app)
+    {
+        super(app);
 
-    var loginUri   = "/login";
-    var successUri = "/";
+        this.loginURI = "/login";
+        this.successURI = "/";
 
+        this.middleware(csrf());
+    }
 
-    return {
-        /**
-         * GET /login
-         *
-         * Display the login form.
-         */
-        login: function(request,response)
+    /**
+     * GET /login
+     *
+     * Display the login form.
+     */
+    login(request,response,next)
+    {
+        if (request.user) {
+            response.redirect(this.successURI);
+        }
+        var flash = request.flash('message');
+
+        return response
+            .view('login')
+            .set({title: "Login"})
+            .use({message: flash[0] || ""});
+    }
+
+    /**
+     * GET /logout
+     *
+     * Logs a user out and redirects to the login page.
+     */
+    logout(request,response,next,log)
+    {
+        if (request.user) {
+            log.access('User logging out: %s', request.user.id);
+        }
+        request.logout();
+        request.flash('message', {
+            text:request.lang('auth.logged_out'),
+            type:'success'
+        });
+
+        response.redirect(this.loginURI);
+    }
+
+    /**
+     * POST /login
+     *
+     * Authenticates a username and password.
+     * POSTing as ajax will return a response in JSON format.
+     */
+    authenticate(request,response,next,passport)
+    {
+        var controller = this;
+        var isAjax = request.ajax;
+
+        // Fires if there was an error...
+        var kill = function(info)
         {
-            if (request.user) {
-                response.redirect(successUri);
-            }
+            var message = request.lang(info.message);
 
-            return response
-                .view('login')
-                .set({title: "Login"})
-                .use({message: request.flash('message') || null});
-        },
-
-        /**
-         * GET /logout
-         *
-         * Logs a user out and redirects to the login page.
-         */
-        logout: function(request,response)
-        {
-            if (request.user) {
-                app.logger.access('User logging out: %s', request.user.id);
-            }
-            request.logout();
             request.flash('message', {
-                text:request.lang('auth.logged_out'),
-                type:'success'
+                text: message,
+                type: 'alert'
+            });
+            return isAjax ? response.smart({success:false, error:message}) : response.redirect(controller.loginURI);
+        };
+
+        // Use passport to authenticate.
+        // Messages are returned in locale format.
+        var opts = {badRequestMessage: 'auth.err_missing_credentials'};
+
+        passport.authenticate('local', opts, function(err,user,info)
+        {
+            if (err) return next(err);
+
+            if (! user) return kill(info);
+
+            request.logIn(user, function(err)
+            {
+                if (err) return kill(info);
+
+                return response.smart(isAjax ? {success:true, user:user, redirect:"/"} : response.redirect(controller.successURI), 200);
             });
 
-            response.redirect(loginUri);
-        },
+        })(request,response,next);
 
-        /**
-         * POST /login
-         *
-         * Authenticates a username and password.
-         * POSTing as ajax will return a response in JSON format.
-         */
-        authenticate: function(request,response,next)
-        {
-            var isAjax = request.ajax;
-
-            // Fires if there was an error...
-            function kill(info)
-            {
-                var message = request.lang(info.message);
-
-                request.flash('message', {
-                    text: message,
-                    type: 'alert'
-                });
-                return isAjax ? response.smart({success:false, error:message}) : response.redirect(loginUri);
-            }
-
-            // Use passport to authenticate.
-            // Messages are returned in locale format.
-            var opts = {badRequestMessage:'auth.err_missing_credentials'};
-
-            app.passport.authenticate('local', opts, function(err,user,info)
-            {
-                if (err) return next(err);
-                if (! user) return kill(info);
-
-                request.logIn(user, function(err)
-                {
-                    if (err) return kill(info);
-
-                    return response.smart(isAjax ? {success:true, user:user, redirect:"/"} : response.redirect(successUri), 200);
-                });
-
-            })(request,response,next);
-
-            return true;
-        },
+        return true;
     }
-});
+}
+
+module.exports = authController;

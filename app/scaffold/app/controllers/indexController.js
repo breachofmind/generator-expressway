@@ -2,13 +2,19 @@
 
 var expressway = require('expressway');
 
-module.exports = expressway.Controller.create('indexController', function(app)
+class indexController extends expressway.Controller
 {
-    return {
-        index: function(request,response,next) {
-            return response
-                .view('index')
-                .set('title','Expressway');
-        }
+    constructor(app)
+    {
+        super(app);
     }
-});
+
+    index(request,response,next)
+    {
+        return response
+            .view('index')
+            .set('title','Expressway');
+    }
+}
+
+module.exports = indexController;

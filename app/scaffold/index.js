@@ -1,13 +1,17 @@
 "use strict";
 
-var expressway = require('expressway');
-var cp  = require('child_process');
-var app = expressway.init(__dirname + "/app/");
+var Expressway  = require('expressway');
+var cp          = require('child_process');
+var expressway  = Expressway.init(__dirname + "/app/");
 
-app.bootstrap().server(function() {
+
+expressway.bootstrap().server(function() {
+
+    var app = expressway.app;
+    var url = app.get('url');
 
     // Boot google chrome if developing locally.
     if (app.env == ENV_LOCAL) {
-        cp.exec(`open /Applications/Google\\ Chrome.app ${app.url()}`, function(err){});
+        cp.exec(`open /Applications/Google\\ Chrome.app ${url()}`, function(err){});
     }
 });

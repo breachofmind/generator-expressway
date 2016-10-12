@@ -1,30 +1,34 @@
 "use strict";
 
-var expressway = require('expressway');
+var Expressway = require('expressway');
 
-class gatePoliciesProvider extends expressway.Provider
+class GatePoliciesProvider extends Expressway.Provider
 {
-    constructor()
+    constructor(app)
     {
-        super("gatepolicies");
+        super(app);
 
         this.order = 0;
 
-        this.requires([
-            'logger',
-            'gate'
-        ]);
-        this.inside(ENV_WEB);
+        this.requires = [
+            'LoggerProvider',
+            'GateProvider'
+        ];
+
+        this.environments = ENV_WEB;
     }
 
     /**
      * Register any classes or instances with the application.
-     * @returns void
+     * @param app Application
+     * @param gate Gate
+     * @param ModelProvider ModelProvider
      */
-    register(app)
+    register(app, gate,ModelProvider)
     {
+
         // Does the user have a superuser status?
-        app.gate.policy(function superUserPolicy(user,object,action)
+        gate.policy("Superuser", function(user,object,action)
         {
             if (user.is('superuser') || user.hasPermission('superuser')) {
                 return true;
@@ -32,10 +36,10 @@ class gatePoliciesProvider extends expressway.Provider
         });
 
         // Model object policies.
-        app.gate.policy(function modelCrudPolicy(user,object,action,args)
+        gate.policy("Model Action", function(user,object,action,args)
         {
             if (typeof object == 'string') {
-                object = app.ModelFactory.get(object);
+                object = ModelProvider.get(object);
                 if (!object) {
                     // Move to the next policy.
                     return;
@@ -66,11 +70,11 @@ class gatePoliciesProvider extends expressway.Provider
 
 
         // When all else fails, just allow.
-        app.gate.policy(function defaultPolicy(user,object,action)
+        gate.policy("Default Allow", function(user,object,action)
         {
             return true;
         });
     }
 }
 
-module.exports = new gatePoliciesProvider();
+module.exports = GatePoliciesProvider;

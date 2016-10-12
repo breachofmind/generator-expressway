@@ -2,7 +2,7 @@ var env = require('./env');
 
 /**
  * Main configuration file for the application.
- * @param system object
+ * @param system {object}
  */
 module.exports = function(system)
 {
@@ -17,7 +17,7 @@ module.exports = function(system)
          * The unique application key.
          * @type string
          */
-        appKey: env.appKey || "keyboard cat",
+        appKey: "<%-appKey%>",
 
         /**
          * Debug setting.
@@ -30,6 +30,12 @@ module.exports = function(system)
          * @type string
          */
         db: env.db || "mongodb://localhost/expressway",
+
+        /**
+         * The driver to use.
+         * @type string mongodb|mysql
+         */
+        db_driver: "<%- driver%>",
 
         /**
          * The server url.
@@ -59,7 +65,7 @@ module.exports = function(system)
          * View engine used by Express.
          * @type string ejs|pug|jade|hbs...
          */
-        view_engine: "ejs",
+        view_engine: "<%- view_engine %>",
 
         /**
          * Supported languages.
@@ -73,6 +79,7 @@ module.exports = function(system)
          */
         resources_path:   "../resources",
         views_path:       "../resources/views",
+        components_path:  "components",
         controllers_path: "controllers",
         models_path:      "models",
         providers_path:   "providers",
@@ -88,26 +95,25 @@ module.exports = function(system)
 
             // Default system providers.
             // Feel free to swap out with your own implementations.
-            system.auth,
-            system.cli,
-            system.controller,
-            system.controllerDefaults,
-            system.database,
-            system.express,
-            system.gate,
-            system.gulp,
-            system.locale,
-            system.logger,
-            system.model,
-            system.router,
-            system.seeder,
-            system.template,
-            system.url,
-            system.view,
+            system.AuthProvider,
+            system.CLIProvider,
+            system.ControllerProvider,
+            system.ControllerDefaultsProvider,
+            system.ExpressProvider,
+            system.GateProvider,
+            system.LocaleProvider,
+            system.LoggerProvider,
+            system.ModelProvider,
+            system.RouterProvider,
+            system.SeederProvider,
+            system.TemplateProvider,
+            system.URLProvider,
+            system.ViewProvider,
 
             // Your providers here...
-            require('../providers/templateDefaults'),
-            require('../providers/gatePolicies'),
+            require('../providers/TemplateDefaultsProvider'),
+            require('../providers/GatePoliciesProvider'),
+            <%- providers.join(",\n") %>
         ]
     }
 };

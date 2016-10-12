@@ -1,74 +1,52 @@
 #!/usr/local/bin/node
+"use strict";
+
 var gulp        = require('gulp');
 var sass        = require('gulp-sass');
 var concat      = require('gulp-concat');
-var autoprefix  = require('gulp-autoprefixer');
 var livereload  = require('gulp-livereload');
-var expressway  = require('expressway');
-var app         = expressway.init(__dirname+"/app/", ENV_CLI).bootstrap();
-var $           = expressway.BigGulp.set(gulp);
+var Expressway  = require('expressway');
+var app         = Expressway.init(__dirname+"/app/", ENV_CLI).app;
+var build       = new Expressway.GulpBuilder(app,gulp);
 
-var FILES = $.collections({
+// --------------------------------------------------------------------
+// File collections and settings
+// --------------------------------------------------------------------
+var FILES = build.collections({
     scss: ['base.scss','app.scss'],
     lib: [],
     npm: ['angular/angular.min.js'],
     js: ['main.js'],
 });
 
+var sassOptions = {outputStyle:"compressed"};
+var viewExtension = app.conf('view_engine');
 
-gulp.task('sass', function()
-{
-    var options = {outputStyle:"compressed"};
-
-    return gulp.src(FILES.scss)
-        .pipe(sass(options)
-            .on('error', sass.logError))
-        .pipe(autoprefix())
-        .pipe($.dest())
-        .pipe(livereload());
-});
-
-
-gulp.task('js:lib', function()
-{
-    gulp.src(FILES.npm)
-        .pipe(concat('npm.js'))
-        .pipe($.dest());
-
-    if (FILES.lib.length) {
-        gulp.src(FILES.lib)
-            .pipe(concat('lib.js'))
-            .pipe($.dest());
-    }
-
-    return true;
-});
-
-
-gulp.task('js:src', function()
-{
-    return gulp.src(FILES.js)
-        .pipe(concat('src.js'))
-        .pipe($.dest());
-});
+// --------------------------------------------------------------------
+// Tasks
+// --------------------------------------------------------------------
+gulp.task('js:npm', build.concat(FILES.npm, 'npm.js'));
+gulp.task('js:lib', build.concat(FILES.lib, 'lib.js'));
+gulp.task('js:src', build.concat(FILES.js, 'src.js'));
+gulp.task('sass',   build.sass(FILES.scss, sassOptions));
 
 
 gulp.task('watch', function()
 {
     livereload.listen();
 
-    var lrPaths = [
-        $.paths.views+'/**/*.'+app.conf('view_engine','ejs'),
-        $.paths.js+'/**/*.js'
-    ];
+    build.watch('js',   ['js:src']);
+    build.watch('scss', ['sass']);
 
-    gulp.watch($.paths.js   + '/**/*.js',     ['js:src']);
-    gulp.watch($.paths.scss + '/**/*.scss',   ['sass']);
-    gulp.watch(lrPaths, function(event) {
+    // When any view or javascript file changes,
+    // livereload the browser.
+    var livereloadPaths = [
+        build.paths.views + '/**/*.' + viewExtension,
+        build.paths.build + '/**/*.js'
+    ];
+    gulp.watch(livereloadPaths, function(event) {
         gulp.src(event.path).pipe(livereload());
     });
 });
 
-gulp.task('default', ['sass','js:lib','js:src'], function() {
-    process.exit(1);
-});
+gulp.task('default', ['sass','js:lib','js:src','js:npm']);

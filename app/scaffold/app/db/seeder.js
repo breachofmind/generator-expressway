@@ -1,6 +1,7 @@
 module.exports = function(Seeder,app)
 {
     var seeder = new Seeder('installation');
+    var logger = app.get('log');
 
     // When the seeder runs, all seeds
     // will clear their documents.
@@ -36,7 +37,7 @@ module.exports = function(Seeder,app)
         // Create the documents in the database.
         seeder.seed().then(function(){
 
-            app.logger.info('[Seeder] Done seeding.');
+            logger.info('[Seeder] Done seeding.');
             process.exit(1);
         })
     })
