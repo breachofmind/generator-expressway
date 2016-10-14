@@ -15,7 +15,7 @@ class GatePoliciesProvider extends Expressway.Provider
             'GateProvider'
         ];
 
-        this.environments = ENV_WEB;
+        this.contexts = [CXT_TEST, CXT_WEB];
     }
 
     /**

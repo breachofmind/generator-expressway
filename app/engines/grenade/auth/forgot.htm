@@ -4,25 +4,21 @@
 <main class="row">
     <div class="columns">
 
-        <h1>Login</h1>
+        <h1>Forgot Password</h1>
 
         @component(FlashMessage, data.message)
 
-        <form action="/login" method="POST">
+        <form action="/login/reset" method="POST">
 
             <label for="Username">Username
                 <input type="text" name="username" id="Username">
             </label>
 
-            <label for="Password">Password
-                <input type="password" name="password" id="Password">
-            </label>
-
             <input type="hidden" name="_csrf" value="${= data.request.csrfToken() }">
 
-            <button type="submit" class="button">${> 'auth.button_submit' }</button>
+            <button type="submit" class="button success">Reset Password</button>
 
-            <a href="/">Back to Site</a>
+            <a href="/login" class="button hollow">Back to Login</a>
         </form>
     </div>
 </main>

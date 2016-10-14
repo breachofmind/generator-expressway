@@ -36,15 +36,23 @@ module.exports = generators.Base.extend({
 
         return this.prompt(input.questions).then(function(answers) {
 
+            var providers = [];
+
             answers.db = answers.driver+"://"+answers.db;
             answers.appName = self.appName;
-            answers.providers = [];
             answers.view_engine = answers.engine;
 
             if (answers.engine == 'grenade') {
                 answers.view_engine = "htm";
-                answers.providers.push('require("grenade").provider()');
+                providers.push('require("grenade").provider()');
             }
+
+            switch (answers.driver) {
+                case 'mongodb' : providers.push('system.MongoDriverProvider'); break;
+                case 'mysql' : providers.push('system.MySQLDriverProvider'); break;
+            }
+
+            answers.providers = providers;
 
             input.answers = answers;
 

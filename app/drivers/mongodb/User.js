@@ -2,6 +2,9 @@
 
 var _ = require('lodash');
 var Expressway = require('expressway');
+var app = Expressway.instance.app;
+var encrypt = app.get('encrypt');
+var gate = app.get('gate');
 
 class User extends Expressway.Model
 {
@@ -9,42 +12,31 @@ class User extends Expressway.Model
     {
         super(app);
 
+        // This is commonly used, so let's store it as a service.
+        app.register('User', this, "The User model");
+
         var ObjectId = this.Types.ObjectId;
 
-        this.title = 'email';
-        this.expose = false;
-        this.guarded = ['password'];
-        this.appends = ['name'];
-        this.populate = ['roles'];
-        this.managed = true;
-        this.labels = {
-            email: "Username",
-            first_name: "First Name",
-            last_name: "Last Name",
-            name: "Name",
-            created_at: "Created Date"
-        };
+        var allowed_failures = app.conf('allowed_login_failures', 0);
+
+        this.title      = 'email';
+        this.expose     = false;
+        this.guarded    = ['password'];
+        this.appends    = ['name'];
+        this.populate   = ['roles'];
+        this.managed    = true;
 
         this.schema = {
-            email:          {type: String, required: true, unique: true},
-            password:       {type: String, required: true},
-            first_name:     {type: String},
-            last_name:      {type: String},
-            roles:          [{type: ObjectId, ref: "Role"}],
-            created_at:     {type: Date, default: Date.now},
-            modified_at:    {type: Date, default: Date.now}
+            email:          { type: String, required: true, unique: true },
+            password:       { type: String, required: true },
+            first_name:     { type: String },
+            last_name:      { type: String },
+            reset_token:    { type: String, default: "" },
+            failures:       { type: Number, default: 0 },
+            roles:          [{ type: ObjectId, ref:"Role" }],
+            created_at:     { type: Date, default: Date.now },
+            modified_at:    { type: Date, default: Date.now }
         };
-
-        /**
-         * Before a model is saved, encrypt the password string.
-         * @returns void
-         */
-        this.schema.pre('save', function Model(next)
-        {
-            var encrypt = app.get('encrypt');
-            this.password = encrypt(this.password, this.created_at.getTime().toString());
-            next();
-        });
 
         this.methods = {
 
@@ -53,22 +45,49 @@ class User extends Expressway.Model
              * @param password string
              * @returns {boolean}
              */
-            isValid: function (password)
+            isValid: function(password)
             {
-                var encrypt = app.get('encrypt');
-                if (!password) {
-                    return false;
+                if (! password) return false;
+
+                return this.password === encrypt(password,this.created_at.getTime().toString());
+            },
+
+            /**
+             * Authenticate a user who is logging in.
+             * @param password string
+             * @throws string
+             * @returns {boolean}
+             */
+            authenicate: function(password)
+            {
+                if (this.reset_token !== "") throw("pending_reset");
+                if (allowed_failures && this.failures > allowed_failures) throw("too_many_failures");
+                if (! password) throw("no_password");
+
+                var valid = this.isValid(password);
+
+                // Increment the failure count.
+                if (valid === false) {
+                    this.failures ++;
+                    this.save();
+                    throw ("bad_password");
                 }
-                return this.password === encrypt(password, this.created_at.getTime().toString());
+                // Reset the failure count.
+                if (this.failures > 0) {
+                    this.failures = 0;
+                    this.save();
+                }
+
+                return valid;
             },
 
             /**
              * Return the user's full name.
              * @returns {string}
              */
-            name: function ()
+            name: function()
             {
-                return [this.first_name, this.last_name].join(" ");
+                return [this.first_name,this.last_name].join(" ");
             },
 
             /**
@@ -76,9 +95,9 @@ class User extends Expressway.Model
              * @param role string name
              * @returns {boolean}
              */
-            is: function (role)
+            is: function(role)
             {
-                for (var i = 0; i < this.roles.length; i++) {
+                for (var i=0; i<this.roles.length; i++) {
                     if (this.roles[i].name.toLowerCase() == role) return true;
                 }
                 return false;
@@ -89,7 +108,7 @@ class User extends Expressway.Model
              * @param key string
              * @returns {boolean}
              */
-            hasPermission: function (key)
+            hasPermission: function(key)
             {
                 return this.permissions().indexOf(key) > -1;
             },
@@ -98,12 +117,11 @@ class User extends Expressway.Model
              * Return an array of this users permissions.
              * @returns {Array}
              */
-            permissions: function ()
+            permissions: function()
             {
                 var permissions = [];
-                this.roles.map(function (role)
-                {
-                    permissions = _.union(role.permissions, permissions);
+                this.roles.map(function(role) {
+                    permissions = _.union(role.permissions,permissions);
                 });
                 return permissions;
             },
@@ -115,12 +133,11 @@ class User extends Expressway.Model
              * @param args mixed, optional
              * @returns {boolean}
              */
-            can: function (object, action, args)
+            can: function(object,action, args)
             {
-                var gate = app.get('gate');
-                if (!gate) return true;
+                if (! gate) return true;
 
-                return gate.check(this, object, action, args);
+                return gate.check(this,object,action,args);
             },
 
             /**
@@ -130,11 +147,24 @@ class User extends Expressway.Model
              * @param args mixed, optional
              * @returns {boolean}
              */
-            cannot: function (object, action, args)
+            cannot: function(object,action,args)
             {
-                return !this.can(object, action, args);
+                return ! this.can(object,action,args);
             }
-        }
+        };
+    }
+
+    /**
+     * Before a model is saved, encrypt the password string.
+     * @returns void
+     */
+    onBoot(schema)
+    {
+        schema.pre('save', function Model(next)
+        {
+            this.password = encrypt(this.password, this.created_at.getTime().toString());
+            next();
+        });
     }
 }
 

@@ -1,8 +1,9 @@
 #!/usr/local/bin/node
-var expressway = require('expressway');
-var app = expressway.init(__dirname+"/../app/", ENV_CLI).bootstrap();
-var cli = app.cli;
-var log = app.logger;
+var Expressway = require('expressway');
+var app = Expressway.cli(__dirname+"/../app/");
+var cli = app.get('cli');
+var columnify = require('columnify');
+var colors = require('colors');
 
 /**
  * Your actions are set up in an object.
@@ -16,8 +17,7 @@ cli.actions({
      * Run the seeder.
      */
     seed: function() {
-        log.info('Running Seed Command...');
-        require(app.rootPath('db/seeder'))(app.Seeder, app);
+        require(app.rootPath('db/seeder'));
     },
 
     /**
@@ -31,9 +31,40 @@ cli.actions({
      * List all the routes in the application.
      */
     routes: function() {
-        app.router.list().forEach(function(route) {
-            console.log(route);
+        var router = app.get('router');
+        var columns = router.routes.map(function(route) {
+            var verbColor = colors.gray;
+            switch (route.verb) {
+                case "post": verbColor = colors.green; break;
+                case "delete": verbColor = colors.red; break;
+                case "put": verbColor = colors.magenta; break;
+            }
+            return {
+                index: route.index,
+                verb: verbColor(route.verb.toUpperCase()),
+                url: route.url,
+                middleware: colors.blue(route.methods.length)
+            }
         });
+        console.log(columnify(columns));
+        process.exit(1);
+    },
+
+    /**
+     * List all services in the application.
+     */
+    services: function()
+    {
+        var columns = Object.keys(app.services).map(function(key) {
+            var doc = app.documentation[key] || "-";
+            var type = typeof app.services[key];
+            return {
+                type: colors.gray(type),
+                service: colors.green(key),
+                description: doc
+            }
+        });
+        console.log(columnify(columns));
         process.exit(1);
     }
 });

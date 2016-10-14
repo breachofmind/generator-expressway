@@ -1,4 +1,4 @@
-<% include common/head %>
+<% include ../common/head %>
 
 <main class="row">
     <div class="columns">
@@ -6,8 +6,8 @@
         <h1>Login</h1>
 
         <% if (message!="") { %>
-        <div class="callout warning">
-            <%= message %>
+        <div class="callout <%= message.type %>">
+            <%= message.text %>
         </div>
         <% } %>
 
@@ -24,11 +24,12 @@
 
             <input type="hidden" name="_csrf" value="<%= request.csrfToken() %>">
 
-            <button type="submit" class="button"><%= lang('auth.button_submit') %></button>
+            <button type="submit" class="button success"><%= lang('auth.button_submit') %></button>
 
-            <a href="/">Back to Site</a>
+            <a href="/login/reset" class="button hollow">Forgot Password</a>
+            <a href="/" class="button hollow">Back to Site</a>
         </form>
     </div>
 </main>
 
-<% include common/footer %>
+<% include ../common/footer %>

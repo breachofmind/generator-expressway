@@ -1,0 +1,30 @@
+@extends(layouts/master)
+
+@section(content)
+<main class="row">
+    <div class="columns">
+
+        <h1>Login</h1>
+
+        @component(FlashMessage, data.message)
+
+        <form action="/login" method="POST">
+
+            <label for="Username">Username
+                <input type="text" name="username" id="Username">
+            </label>
+
+            <label for="Password">Password
+                <input type="password" name="password" id="Password">
+            </label>
+
+            <input type="hidden" name="_csrf" value="${= data.request.csrfToken() }">
+
+            <button type="submit" class="button">${> 'auth.button_submit' }</button>
+
+            <a href="/login/forgot" class="button hollow secondary">Forgot Password</a>
+            <a href="/" class="button hollow">Back to Site</a>
+        </form>
+    </div>
+</main>
+@endsection

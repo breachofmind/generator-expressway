@@ -20,7 +20,7 @@ var FILES = build.collections({
 });
 
 var sassOptions = {outputStyle:"compressed"};
-var viewExtension = app.conf('view_engine');
+
 
 // --------------------------------------------------------------------
 // Tasks
@@ -29,24 +29,5 @@ gulp.task('js:npm', build.concat(FILES.npm, 'npm.js'));
 gulp.task('js:lib', build.concat(FILES.lib, 'lib.js'));
 gulp.task('js:src', build.concat(FILES.js, 'src.js'));
 gulp.task('sass',   build.sass(FILES.scss, sassOptions));
-
-
-gulp.task('watch', function()
-{
-    livereload.listen();
-
-    build.watch('js',   ['js:src']);
-    build.watch('scss', ['sass']);
-
-    // When any view or javascript file changes,
-    // livereload the browser.
-    var livereloadPaths = [
-        build.paths.views + '/**/*.' + viewExtension,
-        build.paths.build + '/**/*.js'
-    ];
-    gulp.watch(livereloadPaths, function(event) {
-        gulp.src(event.path).pipe(livereload());
-    });
-});
-
+gulp.task('watch',  build.listen);
 gulp.task('default', ['sass','js:lib','js:src','js:npm']);

@@ -32,12 +32,6 @@ module.exports = function(system)
         db: env.db || "mongodb://localhost/expressway",
 
         /**
-         * The driver to use.
-         * @type string mongodb|mysql
-         */
-        db_driver: "<%- driver%>",
-
-        /**
          * The server url.
          * @type string
          */
@@ -86,6 +80,14 @@ module.exports = function(system)
         locales_path:     "../resources/lang",
         static_path:      "../public",
         logs_path:        "logs",
+        db_path:          "db",
+
+        /**
+         * Transport to use for nodemailer. By default, uses nodemailer-transport-stub.
+         * @example smtps://postmaster@MAILGUN_SANDBOX.mailgun.org:SMTP_PASSWORD@smtp.mailgun.org
+         * @type {Transport|string|null}
+         */
+        nodemailer_transport: env.nodemailer_transport || null,
 
         /**
          * The application provider array.
@@ -103,6 +105,7 @@ module.exports = function(system)
             system.GateProvider,
             system.LocaleProvider,
             system.LoggerProvider,
+            system.MailProvider,
             system.ModelProvider,
             system.RouterProvider,
             system.SeederProvider,

@@ -13,6 +13,7 @@ class TemplateDefaultsProvider extends Expressway.Provider
         super(app);
 
         this.requires = ['TemplateProvider'];
+        this.contexts = [CXT_TEST, CXT_WEB];
     }
 
     /**
