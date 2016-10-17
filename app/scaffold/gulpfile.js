@@ -6,7 +6,7 @@ var sass        = require('gulp-sass');
 var concat      = require('gulp-concat');
 var livereload  = require('gulp-livereload');
 var Expressway  = require('expressway');
-var app         = Expressway.init(__dirname+"/app/",CXT_CLI);
+var app         = Expressway.init(__dirname+"/app/",CXT_CLI).app;
 var build       = new Expressway.GulpBuilder(app,gulp);
 
 // --------------------------------------------------------------------
