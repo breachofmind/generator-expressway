@@ -137,6 +137,6 @@ module.exports = generators.Base.extend({
 
     end: function()
     {
-        console.log('Finished! Type npm run start.');
+        console.log('Finished! Type npm run install');
     }
 });

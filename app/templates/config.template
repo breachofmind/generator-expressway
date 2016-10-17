@@ -4,12 +4,12 @@ var env = require('./env');
  * Main configuration file for the application.
  * @param system {object}
  */
-module.exports = function(system)
+module.exports = function(system, userDefined)
 {
     return {
         /**
          * The global environment setting.
-         * @type string ENV_LOCAL|ENV_DEV|ENV_PROD|ENV_CLI|ENV_TEST
+         * @type string ENV_LOCAL|ENV_DEV|ENV_PROD
          */
         environment: env.environment || ENV_LOCAL,
 
@@ -114,8 +114,8 @@ module.exports = function(system)
             system.ViewProvider,
 
             // Your providers here...
-            require('../providers/TemplateDefaultsProvider'),
-            require('../providers/GatePoliciesProvider'),
+            userDefined.TemplateDefaultsProvider,
+            userDefined.GatePoliciesProvider,
             <%- providers.join(",\n") %>
         ]
     }

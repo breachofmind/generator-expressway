@@ -2,71 +2,12 @@
 var Expressway = require('expressway');
 var app = Expressway.cli(__dirname+"/../app/");
 var cli = app.get('cli');
-var columnify = require('columnify');
-var colors = require('colors');
 
-/**
- * Your actions are set up in an object.
- */
-cli.actions({
-    mongo: function() {
-        cli.exec('mongod');
-    },
 
-    /**
-     * Run the seeder.
-     */
-    seed: function() {
-        require(app.rootPath('db/seeder'));
-    },
-
-    /**
-     * Test the application.
-     */
-    test: function() {
-        cli.exec('mocha', ['test']);
-    },
-
-    /**
-     * List all the routes in the application.
-     */
-    routes: function() {
-        var router = app.get('router');
-        var columns = router.routes.map(function(route) {
-            var verbColor = colors.gray;
-            switch (route.verb) {
-                case "post": verbColor = colors.green; break;
-                case "delete": verbColor = colors.red; break;
-                case "put": verbColor = colors.magenta; break;
-            }
-            return {
-                index: route.index,
-                verb: verbColor(route.verb.toUpperCase()),
-                url: route.url,
-                middleware: colors.blue(route.methods.length)
-            }
-        });
-        console.log(columnify(columns));
-        process.exit(1);
-    },
-
-    /**
-     * List all services in the application.
-     */
-    services: function()
-    {
-        var columns = Object.keys(app.services).map(function(key) {
-            var doc = app.documentation[key] || "-";
-            var type = typeof app.services[key];
-            return {
-                type: colors.gray(type),
-                service: colors.green(key),
-                description: doc
-            }
-        });
-        console.log(columnify(columns));
-        process.exit(1);
-    }
+cli.command('hello', "A test command").action((env,opts) =>
+{
+    console.log("Hello");
+    process.exit(1);
 });
 
 

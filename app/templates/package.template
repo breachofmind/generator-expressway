@@ -5,6 +5,7 @@
   "main": "index.js",
   "license": "ISC",
   "scripts": {
-    "start" : "node index.js"
+    "install" : "gulp && ./bin/cli seed -d -l && node index.js",
+    "start" : "gulp && node index.js"
   }
 }
