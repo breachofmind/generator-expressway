@@ -1,3 +1,5 @@
+"use strict";
+
 var Component = require('grenade').Component;
 
 class FlashMessage extends Component

@@ -85,7 +85,7 @@ module.exports = function(system, userDefined)
         /**
          * Transport to use for nodemailer. By default, uses nodemailer-transport-stub.
          * @example smtps://postmaster@MAILGUN_SANDBOX.mailgun.org:SMTP_PASSWORD@smtp.mailgun.org
-         * @type {Transport|string|null}
+         * @type {Transport|string|n
          */
         nodemailer_transport: env.nodemailer_transport || null,
 
@@ -98,6 +98,7 @@ module.exports = function(system, userDefined)
             // Default system providers.
             // Feel free to swap out with your own implementations.
             system.AuthProvider,
+            system.CoreProvider,
             system.CLIProvider,
             system.ControllerProvider,
             system.ControllerDefaultsProvider,
@@ -110,7 +111,6 @@ module.exports = function(system, userDefined)
             system.RouterProvider,
             system.SeederProvider,
             system.TemplateProvider,
-            system.URLProvider,
             system.ViewProvider,
 
             // Your providers here...

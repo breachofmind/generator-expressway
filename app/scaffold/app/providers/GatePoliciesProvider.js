@@ -22,9 +22,9 @@ class GatePoliciesProvider extends Expressway.Provider
      * Register any classes or instances with the application.
      * @param app Application
      * @param gate Gate
-     * @param ModelProvider ModelProvider
+     * @param modelService ModelService
      */
-    register(app, gate,ModelProvider)
+    register(app, gate, modelService)
     {
 
         // Does the user have a superuser status?
@@ -39,7 +39,7 @@ class GatePoliciesProvider extends Expressway.Provider
         gate.policy("Model Action", function(user,object,action,args)
         {
             if (typeof object == 'string') {
-                object = ModelProvider.get(object);
+                object = modelService.get(object);
                 if (!object) {
                     // Move to the next policy.
                     return;
