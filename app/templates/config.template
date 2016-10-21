@@ -75,10 +75,12 @@ module.exports = function(system, userDefined)
         views_path:       "../resources/views",
         components_path:  "components",
         controllers_path: "controllers",
+        middlewares_path: "middlewares",
         models_path:      "models",
         providers_path:   "providers",
         locales_path:     "../resources/lang",
         static_path:      "../public",
+        uploads_path:     "../public/uploads",
         logs_path:        "logs",
         db_path:          "db",
 
@@ -88,35 +90,5 @@ module.exports = function(system, userDefined)
          * @type {Transport|string|n
          */
         nodemailer_transport: env.nodemailer_transport || null,
-
-        /**
-         * The application provider array.
-         * @type array
-         */
-        providers: [
-
-            // Default system providers.
-            // Feel free to swap out with your own implementations.
-            system.AuthProvider,
-            system.CoreProvider,
-            system.CLIProvider,
-            system.ControllerProvider,
-            system.ControllerDefaultsProvider,
-            system.ExpressProvider,
-            system.GateProvider,
-            system.LocaleProvider,
-            system.LoggerProvider,
-            system.MailProvider,
-            system.ModelProvider,
-            system.RouterProvider,
-            system.SeederProvider,
-            system.TemplateProvider,
-            system.ViewProvider,
-
-            // Your providers here...
-            userDefined.TemplateDefaultsProvider,
-            userDefined.GatePoliciesProvider,
-            <%- providers.join(",\n") %>
-        ]
     }
 };

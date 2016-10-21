@@ -76,6 +76,12 @@ module.exports = generators.Base.extend({
             this.destinationPath('app/config/config.js'),
             input.answers
         );
+        // Create the configuration file.
+        this.fs.copyTpl(
+            this.templatePath('system.template'),
+            this.destinationPath('app/config/system.js'),
+            input.answers
+        );
 
         // Create the package.json.
         this.fs.copyTpl(
@@ -108,21 +114,8 @@ module.exports = generators.Base.extend({
 
     install: function()
     {
-        var prod = [
-            'csurf'
-        ];
+        var prod = [];
 
-        // Load the library only if it's not installed globally.
-        try { require.resolve('expressway'); } catch(e) { prod.push('breachofmind/expressway'); }
-        if (input.answers.engine == 'grenade') {
-            try { require.resolve('grenade'); } catch(e) { prod.push('breachofmind/grenade'); }
-        }
-        if (input.answers.engine == 'ejs') prod.push('ejs');
-
-
-        if (input.answers.useNg) {
-            prod.push('angular');
-        }
         var dev = [
             'gulp',
             'gulp-concat',
@@ -130,6 +123,20 @@ module.exports = generators.Base.extend({
             'gulp-sass',
             'gulp-livereload',
         ];
+
+        // Load the library only if it's not installed globally.
+        try { require.resolve('expressway'); } catch(e) { prod.push('breachofmind/expressway'); }
+        if (input.answers.engine == 'grenade') {
+            try { require.resolve('grenade'); } catch(e) { prod.push('grenade'); }
+        }
+        if (['ejs','pug','hbs'].indexOf(input.answers.engine) > -1) {
+            prod.push(input.answers.engine);
+        }
+
+
+        if (input.answers.useNg) {
+            prod.push('angular');
+        }
 
         this.npmInstall(prod, {save: true});
         this.npmInstall(dev, {saveDev: true});

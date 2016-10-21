@@ -1,0 +1,49 @@
+module.exports = function(app,System,User)
+{
+    return {
+        /**
+         * The providers to load for this application.
+         * @type {Array}
+         */
+        providers: [
+
+            // Default system providers.
+            // Feel free to swap out with your own implementations.
+            System.Provider.AuthProvider,
+            System.Provider.CoreProvider,
+            System.Provider.CLIProvider,
+            System.Provider.ControllerProvider,
+            System.Provider.ControllerDefaultsProvider,
+            System.Provider.ExpressProvider,
+            System.Provider.GateProvider,
+            System.Provider.LocaleProvider,
+            System.Provider.LoggerProvider,
+            System.Provider.GraphicsProvider,
+            System.Provider.MailProvider,
+            System.Provider.ModelProvider,
+            System.Provider.RouterProvider,
+            System.Provider.SeederProvider,
+            System.Provider.TemplateProvider,
+            System.Provider.ViewProvider,
+
+            // Your providers here...
+            User.Provider.TemplateDefaultsProvider,
+            User.Provider.GatePoliciesProvider,
+            <%- providers.join(",\n\t\t\t") %>
+        ],
+
+        /**
+         * The global middleware for this application.
+         * @type {Array}
+         */
+        middleware: [
+            "CoreMiddleware",
+            "AjaxMiddleware",
+            "StaticContentMiddleware",
+            "LocaleMiddleware",
+            "BodyParserMiddleware",
+            "SessionMiddleware",
+            "FlashMiddleware",
+        ]
+    }
+}
