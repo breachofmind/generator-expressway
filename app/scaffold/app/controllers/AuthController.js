@@ -2,6 +2,7 @@
 
 var Expressway = require('expressway');
 var app = Expressway.instance.app;
+
 var DefaultAuthController = app.get('DefaultAuthController');
 
 // You can also extend off of this controller and replace various methods
@@ -9,16 +10,12 @@ var DefaultAuthController = app.get('DefaultAuthController');
 //
 // class AuthController extends DefaultAuthController
 // {
-//     constructor(app)
-//     {
-//         super(app);
-//     }
-//
 //     index(request,response,next)
 //     {
-//         // Just replace this method.
+//         return "Hello";
 //     }
-//
 // }
+//
+// module.exports = AuthController;
 
 module.exports = DefaultAuthController;

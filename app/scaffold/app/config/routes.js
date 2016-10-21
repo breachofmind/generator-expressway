@@ -14,6 +14,6 @@ module.exports = function(router, app, ControllerDefaultsProvider)
 
     // Application routes.
     router.get({
-        '/' : 'indexController.index'
+        '/' : 'IndexController.index'
     });
 };
