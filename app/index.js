@@ -11,7 +11,7 @@ var input = {
         {type: 'list',  name:'engine',  default:'grenade',              message:"Which View Engine?",   choices:['ejs','grenade']},
         {type: 'list',  name:'driver',  default:'mongodb',              message:"Which DB Driver?",     choices:['mongodb','mysql']},
         {type: 'input', name:'db',      default:"localhost/expressway", message:"Database URI"},
-        {type: 'confirm', name:'useNg', default:true,                   message:"Using Angular?"},
+        {type: 'confirm', name:'useNg', default:false,                  message:"Using Angular?"},
     ],
     answers: {}
 };
@@ -48,8 +48,8 @@ module.exports = generators.Base.extend({
             }
 
             switch (answers.driver) {
-                case 'mongodb' : providers.push('system.MongoDriverProvider'); break;
-                case 'mysql' : providers.push('system.MySQLDriverProvider'); break;
+                case 'mongodb' : providers.push('System.Provider.MongoDriverProvider'); break;
+                case 'mysql' : providers.push('System.Provider.MySQLDriverProvider'); break;
             }
 
             answers.providers = providers;
@@ -144,6 +144,7 @@ module.exports = generators.Base.extend({
 
     end: function()
     {
-        console.log('Finished! Type npm run install');
+        this.spawnCommandSync('gulp');
+        this.spawnCommandSync('node', ['index.js']);
     }
 });

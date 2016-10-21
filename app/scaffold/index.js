@@ -4,7 +4,6 @@ var Expressway  = require('expressway');
 var cp          = require('child_process');
 var expressway  = Expressway.init(__dirname + "/app/");
 
-
 expressway.bootstrap().server(function() {
 
     var app = expressway.app;

@@ -4,91 +4,89 @@ var env = require('./env');
  * Main configuration file for the application.
  * @param system {object}
  */
-module.exports = function(system, userDefined)
-{
-    return {
-        /**
-         * The global environment setting.
-         * @type string ENV_LOCAL|ENV_DEV|ENV_PROD
-         */
-        environment: env.environment || ENV_LOCAL,
+module.exports = {
 
-        /**
-         * The unique application key.
-         * @type string
-         */
-        appKey: "<%-appKey%>",
+    /**
+     * The global environment setting.
+     * @type string ENV_LOCAL|ENV_DEV|ENV_PROD
+     */
+    environment: env.environment || ENV_LOCAL,
 
-        /**
-         * Debug setting.
-         * @type boolean
-         */
-        debug: env.debug || true,
+    /**
+     * The unique application key.
+     * @type string
+     */
+    appKey: "<%-appKey%>",
 
-        /**
-         * The database credentials.
-         * @type string
-         */
-        db: env.db || "mongodb://localhost/expressway",
+    /**
+     * Debug setting.
+     * @type boolean
+     */
+    debug: env.debug || true,
 
-        /**
-         * The server url.
-         * @type string
-         */
-        url: env.url || "http://localhost",
+    /**
+     * The database credentials.
+     * @type string
+     */
+    db: env.db || "mongodb://localhost/expressway",
 
-        /**
-         * The server port.
-         * @type number
-         */
-        port: env.port || 8081,
+    /**
+     * The server url.
+     * @type string
+     */
+    url: env.url || "http://localhost",
 
-        /**
-         * The server proxy url, if using a proxy.
-         * @type string|null
-         */
-        proxy: env.proxy || null,
+    /**
+     * The server port.
+     * @type number
+     */
+    port: env.port || 8081,
 
-        /**
-         * Limit of records to return in the API.
-         * @type number
-         */
-        limit: 10000,
+    /**
+     * The server proxy url, if using a proxy.
+     * @type string|null
+     */
+    proxy: env.proxy || null,
 
-        /**
-         * View engine used by Express.
-         * @type string ejs|pug|jade|hbs...
-         */
-        view_engine: "<%- view_engine %>",
+    /**
+     * Limit of records to return in the API.
+     * @type number
+     */
+    limit: 10000,
 
-        /**
-         * Supported languages.
-         * @type array<string>
-         */
-        lang_support: ['en','en_US'],
+    /**
+     * View engine used by Express.
+     * @type string ejs|pug|jade|hbs...
+     */
+    view_engine: "<%- view_engine %>",
 
-        /**
-         * Folders relative to the application path.
-         * @type string
-         */
-        resources_path:   "../resources",
-        views_path:       "../resources/views",
-        components_path:  "components",
-        controllers_path: "controllers",
-        middlewares_path: "middlewares",
-        models_path:      "models",
-        providers_path:   "providers",
-        locales_path:     "../resources/lang",
-        static_path:      "../public",
-        uploads_path:     "../public/uploads",
-        logs_path:        "logs",
-        db_path:          "db",
+    /**
+     * Supported languages.
+     * @type array<string>
+     */
+    lang_support: ['en','en_US'],
 
-        /**
-         * Transport to use for nodemailer. By default, uses nodemailer-transport-stub.
-         * @example smtps://postmaster@MAILGUN_SANDBOX.mailgun.org:SMTP_PASSWORD@smtp.mailgun.org
-         * @type {Transport|string|n
-         */
-        nodemailer_transport: env.nodemailer_transport || null,
-    }
-};
+    /**
+     * Folders relative to the application path.
+     * @type string
+     */
+    resources_path:   "../resources",
+    views_path:       "../resources/views",
+    components_path:  "components",
+    controllers_path: "controllers",
+    middlewares_path: "middlewares",
+    models_path:      "models",
+    providers_path:   "providers",
+    locales_path:     "../resources/lang",
+    static_path:      "../public",
+    uploads_path:     "../public/uploads",
+    logs_path:        "logs",
+    db_path:          "db",
+
+    /**
+     * Transport to use for nodemailer. By default, uses nodemailer-transport-stub.
+     * @example smtps://postmaster@MAILGUN_SANDBOX.mailgun.org:SMTP_PASSWORD@smtp.mailgun.org
+     * @type {Transport|string|n
+     */
+    nodemailer_transport: env.nodemailer_transport || null,
+}

@@ -3,12 +3,10 @@ var Expressway = require('expressway');
 var app = Expressway.cli(__dirname+"/../app/");
 var cli = app.get('cli');
 
-
 cli.command('hello', "A test command").action((env,opts) =>
 {
     console.log("Hello");
-    process.exit(1);
+    process.exit();
 });
-
 
 cli.run();
