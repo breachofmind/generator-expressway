@@ -14,17 +14,14 @@ class GatePoliciesProvider extends Expressway.Provider
             'LoggerProvider',
             'GateProvider'
         ];
-
-        this.contexts = [CXT_TEST, CXT_WEB];
     }
 
     /**
      * Register any classes or instances with the application.
-     * @param app Application
      * @param gate Gate
      * @param modelService ModelService
      */
-    register(app, gate, modelService)
+    register(gate, modelService)
     {
 
         // Does the user have a superuser status?

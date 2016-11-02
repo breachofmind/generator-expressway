@@ -1,19 +1,20 @@
 /**
  * Provides some routes for the application.
- * @param router {Router}
- * @param app {Application}
- * @param ControllerDefaultsProvider {ControllerDefaultsProvider}
+ * @param router Router
+ * @param LocaleController LocaleController
+ * @param RESTController RESTController
+ * @param AuthController AuthController
  */
-module.exports = function(router, app, ControllerDefaultsProvider)
+module.exports = function(router, LocaleController, RESTController, AuthController)
 {
-    // Use the default controllers,
-    // which should be enough to get started.
-    ControllerDefaultsProvider.AuthController.routes(router);
-    ControllerDefaultsProvider.LocaleController.routes(router);
-    ControllerDefaultsProvider.RESTController.routes(router);
+    router.alias('api', '/api/v1');
+    router.alias('auth', '/auth');
 
-    // Application routes.
-    router.get({
-        '/' : 'IndexController.index'
+    router.app(router.to('api','locale'), LocaleController.routes);
+    router.app(router.to('api'), RESTController.routes);
+    router.app(router.to('auth'), AuthController.routes);
+
+    router.app({
+        'GET /' : 'IndexController.index'
     });
 };

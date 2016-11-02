@@ -3,7 +3,7 @@
 var Expressway = require('expressway');
 var app = Expressway.instance.app;
 
-var DefaultAuthController = app.get('DefaultAuthController');
+var DefaultAuthController = app.get('AuthController');
 
 // You can also extend off of this controller and replace various methods
 // with your own implementations.

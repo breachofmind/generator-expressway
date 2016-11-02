@@ -2,32 +2,39 @@
 "use strict";
 
 var gulp        = require('gulp');
-var sass        = require('gulp-sass');
-var concat      = require('gulp-concat');
-var livereload  = require('gulp-livereload');
 var Expressway  = require('expressway');
-var app         = Expressway.init(__dirname+"/app/",CXT_CLI).app;
-var build       = new Expressway.GulpBuilder(app,gulp);
+var build       = Expressway.gulp(__dirname+"/app/", gulp);
+var app         = Expressway.instance.app;
+var path        = app.get('path');
+var config      = app.get('config');
 
 // --------------------------------------------------------------------
 // File collections and settings
 // --------------------------------------------------------------------
-var FILES = build.collections({
-    scss: ['base.scss','app.scss'],
-    lib: [],
-    npm: ['angular/angular.min.js'],
-    js: ['main.js'],
-});
 
 var sassOptions = {outputStyle:"compressed"};
-
+var sassFiles   = ['app.scss', 'base.scss'];
+var jsEntries   = [path.resources('js/main.js')];
 
 // --------------------------------------------------------------------
 // Tasks
 // --------------------------------------------------------------------
-gulp.task('js:npm', build.concat(FILES.npm, 'npm.js'));
-gulp.task('js:lib', build.concat(FILES.lib, 'lib.js'));
-gulp.task('js:src', build.concat(FILES.js, 'src.js'));
-gulp.task('sass',   build.sass(FILES.scss, sassOptions));
-gulp.task('watch',  build.listen);
-gulp.task('default', ['sass','js:lib','js:src','js:npm']);
+
+build.js({
+    entries: jsEntries,
+    debug: true,
+    sourcemaps: true,
+    outputFile: 'app.bundle.js',
+});
+
+build.sass(path.prepend(path.resources('scss/'), sassFiles), sassOptions);
+
+build.watch([
+    path.views('**/*.'+config('view_engine')),
+    path.public('**/*.js'),
+    path.public('**/*.css'),
+    [path.resources('js/**/*.js'), ['js']],
+    [path.resources('scss/**/*.scss'), ['sass']],
+]);
+
+build.task('default', ['sass','js']);

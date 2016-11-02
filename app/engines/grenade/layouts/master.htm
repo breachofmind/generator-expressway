@@ -5,7 +5,9 @@
     <meta charset="UTF-8">
     ${= data.template.get(['meta','link']) }
 </head>
-<body class="error-page">
+<body>
     @yield(content)
+
+    ${= data.template.get(['script']) }
 </body>
 </html>

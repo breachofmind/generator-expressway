@@ -8,7 +8,7 @@
 
         @component(FlashMessage, data.message)
 
-        <form action="/login/reset/${data.requester.reset_token}" method="POST">
+        <form action="${~auth}/login/reset/${data.requester.reset_token}" method="POST">
 
             <label for="Username">Username
                 <input type="text" name="username" id="Username" disabled value="${=data.requester.email}">

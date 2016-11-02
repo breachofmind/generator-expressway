@@ -8,7 +8,7 @@
 
         @component(FlashMessage, data.message)
 
-        <form action="/login/reset" method="POST">
+        <form action="${~auth}/login/reset" method="POST">
 
             <label for="Username">Username
                 <input type="text" name="username" id="Username">
@@ -18,7 +18,7 @@
 
             <button type="submit" class="button success">Reset Password</button>
 
-            <a href="/login" class="button hollow">Back to Login</a>
+            <a href="${~auth}/login" class="button hollow">Back to Login</a>
         </form>
     </div>
 </main>

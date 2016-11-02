@@ -8,7 +8,7 @@ var gate = app.get('gate');
 
 class User extends Expressway.Model
 {
-    constructor(app)
+    constructor(app,config)
     {
         super(app);
 
@@ -17,7 +17,7 @@ class User extends Expressway.Model
 
         var ObjectId = this.Types.ObjectId;
 
-        var allowed_failures = app.conf('allowed_login_failures', 0);
+        var allowed_failures = config('allowed_login_failures', 0);
 
         this.title      = 'email';
         this.expose     = false;

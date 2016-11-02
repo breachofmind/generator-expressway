@@ -1,0 +1,2 @@
+// Base and global file imports.
+<%- imports.join("\n") %>

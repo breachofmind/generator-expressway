@@ -7,11 +7,9 @@ class IndexController extends Expressway.Controller
     /**
      * IndexController.index route.
      */
-    index(request,response,next)
+    index(request,response,next,view)
     {
-        return response
-            .view('index')
-            .set('title','Expressway');
+        return view('index').set('title','Expressway');
     }
 }
 

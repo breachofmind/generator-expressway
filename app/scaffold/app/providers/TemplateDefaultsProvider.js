@@ -12,27 +12,25 @@ class TemplateDefaultsProvider extends Expressway.Provider
     {
         super(app);
 
-        this.requires = ['TemplateProvider'];
+        this.requires = ['ViewProvider'];
         this.contexts = [CXT_TEST, CXT_WEB];
     }
 
     /**
      * Register the provider with the application.
-     * @param Template Template
      */
-    register(Template)
+    register()
     {
-        Template.defaults = function(view)
+        Expressway.Template.defaults = function(view)
         {
             this.meta('viewport','width=device-width');
 
             // Stylesheets
-            this.style('$foundation', "https://cdnjs.cloudflare.com/ajax/libs/foundation/6.2.3/foundation-flex.min.css");
             this.style('$base', "/base.css");
             this.style('$css', "/app.css");
 
             // Scripts
-            this.script('$js', "/src.js");
+            this.script('$js', "/app.bundle.js");
         };
     }
 }

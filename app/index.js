@@ -2,19 +2,43 @@ var generators = require('yeoman-generator');
 var shortid = require('shortid');
 var _ = require('lodash');
 
-var input = {
-    questions: [
-        {type: 'input', name:'desc',    default:'Expressway application',message:"Application description"},
-        {type: 'input', name:'appKey',  default:shortid.generate(),     message:"Unique application key"},
-        {type: 'input', name:'url',     default:"http://localhost",     message:"URL"},
-        {type: 'input', name:'port',    default:8081,                   message:"Port"},
-        {type: 'list',  name:'engine',  default:'grenade',              message:"Which View Engine?",   choices:['ejs','grenade']},
-        {type: 'list',  name:'driver',  default:'mongodb',              message:"Which DB Driver?",     choices:['mongodb','mysql']},
-        {type: 'input', name:'db',      default:"localhost/expressway", message:"Database URI"},
-        {type: 'confirm', name:'useNg', default:false,                  message:"Using Angular?"},
-    ],
-    answers: {}
-};
+const VIEW_ENGINES = ['ejs','grenade'];
+const DB_DRIVERS = ['mongodb', 'mysql'];
+const PACKAGES = [
+    'angular',
+    'react',
+    'moment',
+    'bootstrap@4.0.0-alpha.5',
+    'foundation-sites',
+];
+
+const QUESTIONS = [
+    q("input",      "desc",     "Application description", "Expressway Application"),
+    q("input",      "appKey",   "Unique application key",  shortid.generate()),
+    q("input",      "url",      "URL",                     "http://localhost"),
+    q("input",      "port",     "Port",                    8081),
+    q("list",       "engine",   "Which View Engine?",      "grenade", VIEW_ENGINES),
+    q("list",       "driver",   "Which DB Driver?",        "mongodb", DB_DRIVERS),
+    q("input",      "db",       "Database URI",            "localhost/expressway"),
+    //q("input",      "seed",     "Database seeder path",    ""),
+    q("checkbox",   "packages", "Which packages?",         [], PACKAGES)
+];
+
+var answers = {};
+var providers = [];
+var npmProd = [];
+var npmDev = [
+    'vinyl-buffer',
+    'vinyl-source-stream',
+    'gulp',
+    'gulp-concat',
+    'gulp-uglify',
+    'gulp-sourcemaps',
+    'gulp-autoprefixer',
+    'gulp-sass',
+    'gulp-livereload',
+];
+
 
 module.exports = generators.Base.extend({
 
@@ -32,14 +56,11 @@ module.exports = generators.Base.extend({
     */
     prompting: function()
     {
-        var self = this;
+        return this.prompt(QUESTIONS).then(output => {
 
-        return this.prompt(input.questions).then(function(answers) {
-
-            var providers = [];
-
+            answers = output;
             answers.db = answers.driver+"://"+answers.db;
-            answers.appName = self.appName;
+            answers.appName = this.appName;
             answers.view_engine = answers.engine;
 
             if (answers.engine == 'grenade') {
@@ -49,14 +70,17 @@ module.exports = generators.Base.extend({
 
             switch (answers.driver) {
                 case 'mongodb' : providers.push('System.Provider.MongoDriverProvider'); break;
-                case 'mysql' : providers.push('System.Provider.MySQLDriverProvider'); break;
+                case 'mysql' :   providers.push('System.Provider.MySQLDriverProvider'); break;
             }
-
             answers.providers = providers;
+            answers.imports = [];
 
-            input.answers = answers;
-
-        }.bind(this));
+            answers.packages.forEach(packageName => {
+                if (packageScripts[packageName]) {
+                    packageScripts[packageName] (this);
+                }
+            })
+        });
     },
 
     /**
@@ -64,87 +88,84 @@ module.exports = generators.Base.extend({
      */
     writing: function()
     {
+        var cp = (from,to,data) => {
+            from = this.templatePath(from);
+            to = this.destinationPath(to || "");
+            if (data) return this.fs.copyTpl(from,to,data);
+            return this.fs.copy(from,to);
+        };
+
         // Create the environment configuration file.
-        this.fs.copyTpl(
-            this.templatePath('env.template'),
-            this.destinationPath('app/config/env.js'),
-            input.answers
-        );
-        // Create the configuration file.
-        this.fs.copyTpl(
-            this.templatePath('config.template'),
-            this.destinationPath('app/config/config.js'),
-            input.answers
-        );
-        // Create the configuration file.
-        this.fs.copyTpl(
-            this.templatePath('system.template'),
-            this.destinationPath('app/config/system.js'),
-            input.answers
-        );
+        cp('env.template',      'app/config/env.js',        answers);
+        cp('config.template',   'app/config/config.js',     answers);
+        cp('system.template',   'app/config/system.js',     answers);
+        cp('package.template',  'package.json',             answers);
+        cp('base.scss.template','resources/scss/base.scss', answers);
 
-        // Create the package.json.
-        this.fs.copyTpl(
-            this.templatePath('package.template'),
-            this.destinationPath('package.json'),
-            input.answers
-        );
+        cp('../scaffold');
+        cp('../drivers/'+answers.driver, 'app/models');
+        cp('../engines/'+answers.engine, 'resources/views');
 
-        this.fs.copy(
-            this.templatePath('../scaffold'),
-            this.destinationPath()
-        );
-        this.fs.copy(
-            this.templatePath('../drivers/'+input.answers.driver),
-            this.destinationPath('app/models')
-        );
-        this.fs.copy(
-            this.templatePath('../engines/'+input.answers.engine),
-            this.destinationPath('resources/views')
-        );
-
-        // grenade
-        if (input.answers.engine == 'grenade') {
-            this.fs.copy(
-                this.templatePath('../grenade-files/components'),
-                this.destinationPath('app/components')
-            );
-        }
+        if (answers.engine == 'grenade') cp('../grenade-files/components', 'app/components');
     },
 
+    /**
+     * Install NPM packages
+     */
     install: function()
     {
-        var prod = [];
+        npmProd = npmProd.concat(answers.packages);
 
-        var dev = [
-            'gulp',
-            'gulp-concat',
-            'gulp-autoprefixer',
-            'gulp-sass',
-            'gulp-livereload',
-        ];
+        pushIf(npmDev, 'watchify', onlyIfResolved('watchify'));
+        pushIf(npmDev, 'browserify', onlyIfResolved('browserify'));
+        pushIf(npmProd, 'breachofmind/expressway', onlyIfResolved('expressway'));
+        pushIf(npmProd, 'grenade', onlyIfResolved('grenade') && answers.engine == 'grenade');
+        pushIf(npmProd, answers.engine, ['ejs','pug','hbs'].indexOf(answers.engine) > -1);
 
-        // Load the library only if it's not installed globally.
-        try { require.resolve('expressway'); } catch(e) { prod.push('breachofmind/expressway'); }
-        if (input.answers.engine == 'grenade') {
-            try { require.resolve('grenade'); } catch(e) { prod.push('grenade'); }
-        }
-        if (['ejs','pug','hbs'].indexOf(input.answers.engine) > -1) {
-            prod.push(input.answers.engine);
-        }
-
-
-        if (input.answers.useNg) {
-            prod.push('angular');
-        }
-
-        this.npmInstall(prod, {save: true});
-        this.npmInstall(dev, {saveDev: true});
+        this.npmInstall(npmProd, {save: true});
+        this.npmInstall(npmDev, {saveDev: true});
     },
 
+    /**
+     * Seed and finish.
+     */
     end: function()
     {
         this.spawnCommandSync('gulp');
+        this.spawnCommandSync('./bin/cli', ['seed','-d','-l']);
         this.spawnCommandSync('node', ['index.js']);
     }
 });
+
+
+
+// --------------------------------------------------------------------
+// Utilities
+// --------------------------------------------------------------------
+
+function q(type,name,message,def,choices) {
+    return {type:type, name:name, message:message, choices:choices,default:def}
+}
+
+function pushIf(to, push, expression) {
+    if (expression) to.push(push);
+}
+
+function onlyIfResolved(packageName) {
+    try {
+        require.resolve(packageName);
+    } catch (e) {
+        return true;
+    }
+    return false;
+}
+
+var packageScripts = {
+    "foundation-sites" : function(yo,data) {
+        answers.imports.push(`@import "../../node_modules/foundation-sites/scss/foundation.scss";`);
+        answers.imports.push(`@include foundation-everything(true)`);
+    },
+    "bootstrap@4.0.0-alpha.5" : function(yo,data) {
+        answers.imports = [`@import "../../node_modules/bootstrap/scss/bootstrap.scss";`]
+    }
+};

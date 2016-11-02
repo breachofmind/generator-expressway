@@ -9,11 +9,11 @@ module.exports = function(app,System,User)
 
             // Default system providers.
             // Feel free to swap out with your own implementations.
+            System.Provider.APIProvider,
             System.Provider.AuthProvider,
             System.Provider.CoreProvider,
             System.Provider.CLIProvider,
             System.Provider.ControllerProvider,
-            System.Provider.ControllerDefaultsProvider,
             System.Provider.ExpressProvider,
             System.Provider.GateProvider,
             System.Provider.LocaleProvider,
@@ -23,7 +23,6 @@ module.exports = function(app,System,User)
             System.Provider.ModelProvider,
             System.Provider.RouterProvider,
             System.Provider.SeederProvider,
-            System.Provider.TemplateProvider,
             System.Provider.ViewProvider,
 
             // Your providers here...
