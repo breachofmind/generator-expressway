@@ -1,12 +1,19 @@
 #!/usr/local/bin/node
-var Expressway = require('expressway');
-var app = Expressway.cli(__dirname+"/../app/");
-var cli = app.get('cli');
+var expressway = require('expressway');
 
-cli.command('hello', "A test command").action((env,opts) =>
+global.EXPRESSWAY_CONTEXT = CXT_CLI;
+
+var app = require('../index');
+
+
+/**
+ * Just a test command.
+ * @usage ./bin/cli hello
+ */
+app.cli.command('hello', "A test command").action((env,opts) =>
 {
-    console.log("Hello");
-    process.exit();
+    app.cli.output(['Hello'], true);
 });
 
-cli.run();
+
+app.cli.run();

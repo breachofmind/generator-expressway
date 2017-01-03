@@ -1,13 +1,14 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>${= data.template.title }</title>
+    <title>${= data.title}</title>
     <meta charset="UTF-8">
-    ${= data.template.get(['meta','link']) }
+    ${= data.meta }
+    ${= data.styles }
 </head>
 <body>
     @yield(content)
 
-    ${= data.template.get(['script']) }
+    ${= data.scripts }
 </body>
 </html>

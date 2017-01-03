@@ -1,6 +1,6 @@
-var Expressway = require('expressway');
+var Model = require('expressway').Model;
 
-class Media extends Expressway.Model
+class Media extends Model
 {
     constructor(app)
     {
@@ -11,16 +11,11 @@ class Media extends Expressway.Model
         this.guarded    = [];
         this.appends    = [];
         this.populate   = [];
-        this.labels     = {
-            title:     "Title",
-            file_name: "File Name",
-            file_type: "File Type",
-            alt_text:  "Alt Text",
-            caption:   "Caption"
-        };
+    }
 
-
-        this.schema = {
+    schema(object)
+    {
+        return {
             title:       { type: String, required: true },
             file_name:   { type: String, required: true },
             file_type:   { type: String, required: true },
@@ -30,8 +25,11 @@ class Media extends Expressway.Model
             created_at:  { type: Date, default: Date.now },
             modified_at: { type: Date, default: Date.now }
         };
+    }
 
-        this.methods = {}
+    methods(object)
+    {
+        return super.methods(object);
     }
 }
 

@@ -8,7 +8,11 @@ class FlashMessage extends Component
     {
         super(tag);
 
-        this.view = 'components/flash';
+        this.template = `
+<div class="alert callout ${data.message.type}">
+    <p>${data.message.text}</p>
+</div>`;
+
     }
 
     /**

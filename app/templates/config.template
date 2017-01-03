@@ -1,5 +1,3 @@
-var env = require('./env');
-
 /**
  * Main configuration file for the application.
  * @param system {object}
@@ -10,43 +8,43 @@ module.exports = {
      * The global environment setting.
      * @type string ENV_LOCAL|ENV_DEV|ENV_PROD
      */
-    environment: env.environment || ENV_LOCAL,
+    env: ENV_LOCAL,
 
     /**
      * The unique application key.
      * @type string
      */
-    appKey: "<%-appKey%>",
+    appKey: "<%=appKey%>",
 
     /**
      * Debug setting.
      * @type boolean
      */
-    debug: env.debug || true,
+    debug: false,
 
     /**
      * The database credentials.
      * @type string
      */
-    db: env.db || "mongodb://localhost/expressway",
+    db: "mongodb://localhost/expressway",
 
     /**
      * The server url.
      * @type string
      */
-    url: env.url || "http://localhost",
+    url: "http://localhost",
 
     /**
      * The server port.
      * @type number
      */
-    port: env.port || 8081,
+    port: 8081,
 
     /**
      * The server proxy url, if using a proxy.
      * @type string|null
      */
-    proxy: env.proxy || null,
+    proxy: undefined,
 
     /**
      * Limit of records to return in the API.
@@ -58,7 +56,7 @@ module.exports = {
      * View engine used by Express.
      * @type string ejs|pug|jade|hbs...
      */
-    view_engine: "<%- view_engine %>",
+    view_engine: "htm",
 
     /**
      * Supported languages.
@@ -66,27 +64,51 @@ module.exports = {
      */
     lang_support: ['en','en_US'],
 
-    /**
-     * Folders relative to the application path.
-     * @type string
-     */
-    resources_path:   "../resources",
-    views_path:       "../resources/views",
-    components_path:  "components",
-    controllers_path: "controllers",
-    middlewares_path: "middlewares",
-    models_path:      "models",
-    providers_path:   "providers",
-    locales_path:     "../resources/lang",
-    static_path:      "../public",
-    uploads_path:     "../public/uploads",
-    logs_path:        "logs",
-    db_path:          "db",
+    paths: {
+        tmp: "./tmp",
+        logs: "./tmp/logs",
+        views: "./resources/views",
+        locales: "./resources/locale",
+        resources: "./resources",
+        config: "./config",
+        models: "./app/models",
+        controllers: "./app/controllers",
+        middleware: "./app/middlewares",
+        providers: "./app/providers",
+        services: "./app/services",
+        components: "./app/components",
+        uploads: "./public/uploads",
+        public: "./public",
+        db: "./app/db",
+
+    },
 
     /**
      * Transport to use for nodemailer. By default, uses nodemailer-transport-stub.
      * @example smtps://postmaster@MAILGUN_SANDBOX.mailgun.org:SMTP_PASSWORD@smtp.mailgun.org
      * @type {Transport|string|n
      */
-    nodemailer_transport: env.nodemailer_transport || null,
+    nodemailer_transport: undefined,
+
+    // Custom debugger.
+    debugger: require('expressway/src/support/debugger'),
+
+    /**
+     * Extension to use for your root application.
+     * @type Extension
+     */
+    root: require('../app/RootExtension'),
+
+    /**
+     * Classes to use in the application.
+     * @type Array<Function>
+     */
+    use: [
+        require('expressway/src/providers'),
+        require('expressway/src/middlewares'),
+
+        require('../app/providers/GatePoliciesProvider'),
+        require('../app/models/Media'),
+        require('../app/controllers/IndexController'),
+    ]
 }

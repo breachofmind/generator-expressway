@@ -1,10 +1,14 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Error</title>
-    ${= data.template.get(['meta','link']) }
+    <title>${= data.title}</title>
+    <meta charset="UTF-8">
+    ${= data.meta }
+    ${= data.styles }
 </head>
 <body class="error-page">
-    @yield(content)
+@yield(content)
+
+${= data.scripts }
 </body>
 </html>

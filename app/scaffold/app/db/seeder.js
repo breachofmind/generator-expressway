@@ -1,28 +1,36 @@
-var Expressway = require('expressway');
-var app = Expressway.cli(__dirname+"/../");
-var crud = app.get('permissionBuilder');
+"use strict";
 
-var installer = new Expressway.Seeder('installation');
+/**
+ * Seeder service.
+ *
+ * @injectable
+ * @param app Application
+ * @param opts Object
+ * @param seeder SeederService
+ * @param permissions Function
+ */
+module.exports = function(app,opts,seeder,permissions)
+{
+    seeder.opts = opts;
 
-var roles = [
-    {
-        name: 'superuser',
-        description: "Has system-wide permissions.",
-        permissions: ['superuser']
-    }];
+    var installer = seeder.add('installer');
 
-// Add our seeds into the seeder instance.
-installer.add('User',  'users.csv');
-installer.add('Role',  roles);
+    // Add our seeds into the seeder instance.
+    installer.add('Media','media.csv');
 
-Expressway.Seeder.prepareAll( result => {
 
-    // Use this opportunity between seeding to assign some relationships.
-    // Assign the users their appropriate roles.
-    installer.User[0].roles = [installer.Role[0].id];
+    seeder.prepare( result => {
 
-}).then( result => {
+        // Use this opportunity between seeding to assign some relationships.
+        // installer.Media[0].author = installer.User[0]._id
 
-    // Create the documents in the database.
-    Expressway.Seeder.seedAll();
-});
+    }).then( result => { seeder.seed() });
+};
+
+
+
+
+
+
+
+

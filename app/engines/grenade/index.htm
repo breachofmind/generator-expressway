@@ -4,15 +4,6 @@
 <main class="row">
     <div class="columns">
         <h1>Welcome</h1>
-
-        @if(data.user)
-            <h2>Logged in: ${= data.user.first_name }</h2>
-            <a href="${~auth}/logout" class="button alert">Log out</a>
-            <a href="${~api}" class="button">API</a>
-        @else
-            <p>Hello, ${= data.lang('index.welcome', 'The Application') }</p>
-            <a href="${~auth}/login" class="button success">Log in</a>
-        @endif
     </div>
 
 </main>

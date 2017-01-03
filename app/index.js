@@ -3,11 +3,12 @@ var shortid = require('shortid');
 var _ = require('lodash');
 
 const VIEW_ENGINES = ['ejs','grenade'];
-const DB_DRIVERS = ['mongodb', 'mysql'];
+const DB_DRIVERS = ['mongodb'];
 const PACKAGES = [
     'angular',
     'react',
     'moment',
+    'vue',
     'bootstrap@4.0.0-alpha.5',
     'foundation-sites',
 ];
@@ -20,23 +21,24 @@ const QUESTIONS = [
     q("list",       "engine",   "Which View Engine?",      "grenade", VIEW_ENGINES),
     q("list",       "driver",   "Which DB Driver?",        "mongodb", DB_DRIVERS),
     q("input",      "db",       "Database URI",            "localhost/expressway"),
-    //q("input",      "seed",     "Database seeder path",    ""),
     q("checkbox",   "packages", "Which packages?",         [], PACKAGES)
 ];
 
 var answers = {};
-var providers = [];
 var npmProd = [];
 var npmDev = [
-    'vinyl-buffer',
-    'vinyl-source-stream',
-    'gulp',
-    'gulp-concat',
-    'gulp-uglify',
-    'gulp-sourcemaps',
-    'gulp-autoprefixer',
-    'gulp-sass',
-    'gulp-livereload',
+    "autoprefixer",
+    "babel-core",
+    "babel-loader",
+    "babel-preset-es2015",
+    "css-loader",
+    "node-sass",
+    "postcss-loader",
+    "sass-loader",
+    "style-loader",
+    "webpack",
+    "webpack-dev-middleware",
+    "webpack-hot-middleware"
 ];
 
 
@@ -65,14 +67,8 @@ module.exports = generators.Base.extend({
 
             if (answers.engine == 'grenade') {
                 answers.view_engine = "htm";
-                providers.push('require("grenade").provider()');
             }
 
-            switch (answers.driver) {
-                case 'mongodb' : providers.push('System.Provider.MongoDriverProvider'); break;
-                case 'mysql' :   providers.push('System.Provider.MySQLDriverProvider'); break;
-            }
-            answers.providers = providers;
             answers.imports = [];
 
             answers.packages.forEach(packageName => {
@@ -96,9 +92,8 @@ module.exports = generators.Base.extend({
         };
 
         // Create the environment configuration file.
-        cp('env.template',      'app/config/env.js',        answers);
-        cp('config.template',   'app/config/config.js',     answers);
-        cp('system.template',   'app/config/system.js',     answers);
+        cp('env.template',      'config/env.js',        answers);
+        cp('config.template',   'config/config.js',     answers);
         cp('package.template',  'package.json',             answers);
         cp('base.scss.template','resources/scss/base.scss', answers);
 
@@ -121,6 +116,7 @@ module.exports = generators.Base.extend({
         pushIf(npmProd, 'breachofmind/expressway', onlyIfResolved('expressway'));
         pushIf(npmProd, 'grenade', onlyIfResolved('grenade') && answers.engine == 'grenade');
         pushIf(npmProd, answers.engine, ['ejs','pug','hbs'].indexOf(answers.engine) > -1);
+        pushIf(npmDev, ["vue-loader", "vue-template-compiler"], npmProd.indexOf('vue') > -1);
 
         this.npmInstall(npmProd, {save: true});
         this.npmInstall(npmDev, {saveDev: true});
@@ -131,7 +127,6 @@ module.exports = generators.Base.extend({
      */
     end: function()
     {
-        this.spawnCommandSync('gulp');
         this.spawnCommandSync('./bin/cli', ['seed','-d','-l']);
         this.spawnCommandSync('node', ['index.js']);
     }
@@ -148,7 +143,7 @@ function q(type,name,message,def,choices) {
 }
 
 function pushIf(to, push, expression) {
-    if (expression) to.push(push);
+    if (expression) to = to.concat(push);
 }
 
 function onlyIfResolved(packageName) {
