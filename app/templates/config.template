@@ -4,6 +4,19 @@
  */
 module.exports = {
 
+    root: require('../app/App'),
+
+    /**
+     * Classes to use in the application.
+     * @type Array<Function>
+     */
+    use: [
+        require('expressway/src/providers'),
+        require('expressway/src/middlewares'),
+        require('../app/models/Media'),
+        require('../app/controllers/IndexController'),
+    ],
+
     /**
      * The global environment setting.
      * @type string ENV_LOCAL|ENV_DEV|ENV_PROD
@@ -24,9 +37,15 @@ module.exports = {
 
     /**
      * The database credentials.
-     * @type string
+     * @type Object
      */
-    db: "mongodb://localhost/expressway",
+    db: {
+        driver: require('expressway/src/drivers/MongooseDriver'),
+        hostname: 'localhost',
+        database: 'expressway',
+        username: null,
+        password: null
+    },
 
     /**
      * The server url.
@@ -62,53 +81,47 @@ module.exports = {
      * Supported languages.
      * @type array<string>
      */
-    lang_support: ['en','en_US'],
+    locales: ['en','en_us'],
 
+    /**
+     * Paths to files.
+     * @type {Object}
+     */
     paths: {
-        tmp: "./tmp",
-        logs: "./tmp/logs",
-        views: "./resources/views",
-        locales: "./resources/locale",
-        resources: "./resources",
-        config: "./config",
-        models: "./app/models",
+        tmp:         "./tmp",
+        logs:        "./tmp/logs",
+        views:       "./resources/views",
+        locales:     "./resources/locale",
+        resources:   "./resources",
+        config:      "./config",
+        models:      "./app/models",
         controllers: "./app/controllers",
-        middleware: "./app/middlewares",
-        providers: "./app/providers",
-        services: "./app/services",
-        components: "./app/components",
-        uploads: "./public/uploads",
-        public: "./public",
-        db: "./app/db",
-
+        middleware:  "./app/middlewares",
+        providers:   "./app/providers",
+        services:    "./app/services",
+        components:  "./app/components",
+        uploads:     "./public/uploads",
+        public:      "./public",
+        db:          "./app/db",
     },
+
+    /**
+     * When using ConsoleLogging middleware, prints the log in a nice way.
+     * @type {Boolean}
+     */
+    pretty_logging: false,
 
     /**
      * Transport to use for nodemailer. By default, uses nodemailer-transport-stub.
      * @example smtps://postmaster@MAILGUN_SANDBOX.mailgun.org:SMTP_PASSWORD@smtp.mailgun.org
-     * @type {Transport|string|n
+     * @type {Transport|string|null}
      */
-    nodemailer_transport: undefined,
-
-    // Custom debugger.
-    debugger: require('expressway/src/support/debugger'),
+    nodemailer_transport: "smtp://smartrelay.brightstarcorp.com",
 
     /**
-     * Extension to use for your root application.
-     * @type Extension
+     * A custom debugging function.
+     * @injectable
+     * @type Function
      */
-    root: require('../app/RootExtension'),
-
-    /**
-     * Classes to use in the application.
-     * @type Array<Function>
-     */
-    use: [
-        require('expressway/src/providers'),
-        require('expressway/src/middlewares'),
-
-        require('../app/providers/GatePoliciesProvider'),
-        require('../app/models/Media'),
-        require('../app/controllers/IndexController'),
-    ]
+    debugger: require('expressway/src/support/debugger')
 }

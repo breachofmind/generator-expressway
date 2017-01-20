@@ -1,11 +1,12 @@
 "use strict";
 
 var Extension = require('expressway').Extension;
+
 /**
  * The Root Extension is your core application.
  * All sub-applications and extensions are attached to this app.
  */
-class RootExtension extends Extension
+class App extends Extension
 {
     /**
      * Constructor.
@@ -20,33 +21,33 @@ class RootExtension extends Extension
 
         this.use(require('grenade/expressway'));
 
-        this.middleware = [
+        this.routes.middleware([
             'Static',
             'Init',
             'ConsoleLogging',
             'BodyParser',
             'Localization',
             'Session',
-        ];
+        ]);
 
-        this.routes = [
+        this.routes.add([
             {
                 "GET /" : "IndexController.index",
             },
-            'NotFound'
-        ];
+        ]);
 
-        this.staticPaths["/"] = paths.public();
+        this.routes.error(404, 'NotFound');
+
+        this.routes.static("/", paths.public());
     }
 
     /**
      * Fired when the application boots.
      * @param next Function
-     * @param app Application
      * @param controller Function
      * @returns void
      */
-    boot(next,app,controller)
+    boot(next,controller)
     {
         controller('IndexController').defaults.push(viewDefaults);
 
@@ -58,10 +59,10 @@ class RootExtension extends Extension
  * Adds default styles and scripts to all controller methods.
  * @param view
  */
-function viewDefaults(view) {
-    view.style('app', '/app.css');
-    view.style('base', '/base.css');
+function viewDefaults(view)
+{
+    view.script('js', '/main.bundle.js');
 }
 
 
-module.exports = RootExtension;
+module.exports = App;

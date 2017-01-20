@@ -4,16 +4,16 @@ var expressway = require('expressway');
 global.EXPRESSWAY_CONTEXT = CXT_CLI;
 
 var app = require('../index');
-
+var cli = app.get('cli');
 
 /**
  * Just a test command.
  * @usage ./bin/cli hello
  */
-app.cli.command('hello', "A test command").action((env,opts) =>
+cli.command('hello', "A test command").action((env,opts) =>
 {
-    app.cli.output(['Hello'], true);
+    cli.output(['Hello'], true);
 });
 
 
-app.cli.run();
+cli.run();

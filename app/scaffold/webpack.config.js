@@ -3,11 +3,9 @@
 var path = require('path');
 var webpack = require('webpack');
 var app = require('./index');
-var paths = app.get('paths');
-var config = app.get('config');
-var url = app.get('url');
 
-const BUILD_PATH = paths.public();
+// App services
+var [paths,config,url] = app.get('paths','config','url');
 
 module.exports = {
     entry: {
@@ -18,7 +16,7 @@ module.exports = {
         ]
     },
     output: {
-        path: BUILD_PATH,
+        path: paths.public(),
         publicPath: url.get(),
         filename: '[name].bundle.js'
     },
@@ -27,7 +25,7 @@ module.exports = {
             'vue$': 'vue/dist/vue.common.js'
         }
     },
-    devtool: 'eval-source-map',
+    devtool: 'source-map',
     module: {
         loaders: [
             {

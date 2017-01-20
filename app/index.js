@@ -19,8 +19,9 @@ const QUESTIONS = [
     q("input",      "url",      "URL",                     "http://localhost"),
     q("input",      "port",     "Port",                    8081),
     q("list",       "engine",   "Which View Engine?",      "grenade", VIEW_ENGINES),
-    q("list",       "driver",   "Which DB Driver?",        "mongodb", DB_DRIVERS),
-    q("input",      "db",       "Database URI",            "localhost/expressway"),
+    //q("list",       "driver",   "Which DB Driver?",        "mongodb", DB_DRIVERS),
+    q("input",      "dbHostname", "Database Host", "localhost"),
+    q("input",      "dbDatabase", "Database Name", "expressway"),
     q("checkbox",   "packages", "Which packages?",         [], PACKAGES)
 ];
 
@@ -61,7 +62,7 @@ module.exports = generators.Base.extend({
         return this.prompt(QUESTIONS).then(output => {
 
             answers = output;
-            answers.db = answers.driver+"://"+answers.db;
+            answers.driver = "mongodb";
             answers.appName = this.appName;
             answers.view_engine = answers.engine;
 
@@ -100,8 +101,6 @@ module.exports = generators.Base.extend({
         cp('../scaffold');
         cp('../drivers/'+answers.driver, 'app/models');
         cp('../engines/'+answers.engine, 'resources/views');
-
-        if (answers.engine == 'grenade') cp('../grenade-files/components', 'app/components');
     },
 
     /**
@@ -127,8 +126,8 @@ module.exports = generators.Base.extend({
      */
     end: function()
     {
-        this.spawnCommandSync('./bin/cli', ['seed','-d','-l']);
-        this.spawnCommandSync('node', ['index.js']);
+        console.log('Done!');
+        console.log('npm run start')
     }
 });
 
