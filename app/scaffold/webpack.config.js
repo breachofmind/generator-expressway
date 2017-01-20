@@ -11,7 +11,7 @@ module.exports = {
     entry: {
         main: [
             'webpack/hot/dev-server',
-            'webpack-hot-middleware/client',
+            'webpack-hot-middleware/client?path='+url.get('__webpack_hmr'),
             paths.resources('js/main.js'),
         ]
     },
