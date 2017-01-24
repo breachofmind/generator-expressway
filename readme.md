@@ -18,5 +18,5 @@ npm install -g breachofmind/generator-expressway
 
 Create a new directory to house your application, such as `/Sites/myApp` then run the Yeoman command:
 ```bash
-yo expressway
+yo expressway myApp
 ```
