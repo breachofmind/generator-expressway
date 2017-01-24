@@ -8,6 +8,7 @@ var app = expressway({
     config: [
         require('./config/config'),
         require('./config/env'),
+        require('./config/routes'),
     ],
     rootPath: __dirname,
 });

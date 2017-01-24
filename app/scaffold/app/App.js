@@ -10,59 +10,50 @@ class App extends Extension
 {
     /**
      * Constructor.
-     * @param app Application
-     * @param paths PathService
+     * @param app {Application}
+     * @param paths {PathService}
      */
-    constructor(app,paths)
+    constructor(app,paths,config)
     {
         super(app);
 
-        app.use(app.config.use);
+        app.use(config('use'));
+
+        this.package = require('../package.json');
 
         this.use(require('grenade/expressway'));
 
-        this.routes.middleware([
-            'Static',
-            'Init',
-            'ConsoleLogging',
-            'BodyParser',
-            'Localization',
-            'Session',
-        ]);
-
-        this.routes.add([
-            {
-                "GET /" : "IndexController.index",
-            },
-        ]);
-
-        this.routes.error(404, 'NotFound');
+        this.routes.middleware(config('routes.middleware'));
+        this.routes.add(config('routes.paths'));
+        this.routes.error(404, config('routes.error'));
 
         this.routes.static("/", paths.public());
+
+        this.use('expressway/src/services/WebpackService');
+
+        this.webpack.entry('main.js');
     }
 
     /**
      * Fired when the application boots.
      * @param next Function
      * @param controller Function
-     * @returns void
+     * @param devMiddleware Dev
+     * @param paths PathService
      */
-    boot(next,controller)
+    boot(next,controller,devMiddleware,paths)
     {
-        controller('IndexController').defaults.push(viewDefaults);
+        controller('IndexController').defaults.push(view => {
+            this.webpack.loadBundles(view);
+        });
+
+        devMiddleware.watch([
+            paths.views(),
+            paths.public(),
+        ]);
 
         super.boot(next);
     }
 }
-
-/**
- * Adds default styles and scripts to all controller methods.
- * @param view
- */
-function viewDefaults(view)
-{
-    view.script('js', '/main.bundle.js');
-}
-
 
 module.exports = App;

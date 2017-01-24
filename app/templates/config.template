@@ -17,6 +17,7 @@ module.exports = {
         require('../app/controllers/IndexController'),
     ],
 
+
     /**
      * The global environment setting.
      * @type string ENV_LOCAL|ENV_DEV|ENV_PROD
