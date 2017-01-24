@@ -12,6 +12,7 @@ class App extends Extension
      * Constructor.
      * @param app {Application}
      * @param paths {PathService}
+     * @param config Function
      */
     constructor(app,paths,config)
     {
@@ -21,7 +22,7 @@ class App extends Extension
 
         this.package = require('../package.json');
 
-        this.use(require('grenade/expressway'));
+        this.use(require('grenade/expressway'), {});
 
         this.routes.middleware(config('routes.middleware'));
         this.routes.add(config('routes.paths'));
@@ -32,6 +33,7 @@ class App extends Extension
         this.use('expressway/src/services/WebpackService');
 
         this.webpack.entry('main.js');
+        this.webpack.showErrors = false;
     }
 
     /**

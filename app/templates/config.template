@@ -13,7 +13,6 @@ module.exports = {
     use: [
         require('expressway/src/providers'),
         require('expressway/src/middlewares'),
-        require('../app/models/Media'),
         require('../app/controllers/IndexController'),
     ],
 

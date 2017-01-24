@@ -1,5 +1,6 @@
 //.main entry point
 
+require('../scss/app.scss');
 require('./app');
 
 if (module.hot) {
