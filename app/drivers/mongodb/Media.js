@@ -1,35 +1,45 @@
 var Model = require('expressway').Model;
 
+const LABELS = {
+    title: "Title",
+    file_name: "File name",
+    file_type: "File Type",
+    alt_text: "Alt Text",
+    caption: "Caption",
+    etag: "Etag"
+};
+
 class Media extends Model
 {
-    constructor(app)
+    constructor(app,media)
     {
         super(app);
 
-        this.title      = 'title';
-        this.expose     = true;
-        this.guarded    = [];
-        this.appends    = [];
-        this.populate   = [];
+        this.title    = 'title';
+        this.expose   = true;
+        this.singular = "Media";
+        this.plural   = "Media";
+        this.managed  = "author";
+        this.icon     = "image.photo_library";
+
+        // Attach the media thumbnail as the preview field.
+        this.on('toJSON', function(json,model,object) {
+            json.$preview = media.url(object.file_name, 'thumb', model.noImage);
+        });
     }
 
-    schema(object)
+    schema(fields, types)
     {
-        return {
-            title:       { type: String, required: true },
-            file_name:   { type: String, required: true },
-            file_type:   { type: String, required: true },
-            alt_text:    { type: String },
-            caption:     { type: String },
-            etag:        { type: String },
-            created_at:  { type: Date, default: Date.now },
-            modified_at: { type: Date, default: Date.now }
-        };
-    }
-
-    methods(object)
-    {
-        return super.methods(object);
+        fields
+            .timestamps()
+            .add('title',     types.Title)
+            .add('author',    types.User, {required:false})
+            .add('file_name', types.Text, 'required', 'display', 'fillable')
+            .add('file_type', types.Text, 'required', 'display', 'fillable')
+            .add('alt_text',  types.Text, 'fillable')
+            .add('caption',   types.Text, 'fillable')
+            .add('etag',      types.Text)
+            .labels(LABELS)
     }
 }
 

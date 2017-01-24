@@ -116,7 +116,7 @@ module.exports = {
      * @example smtps://postmaster@MAILGUN_SANDBOX.mailgun.org:SMTP_PASSWORD@smtp.mailgun.org
      * @type {Transport|string|null}
      */
-    nodemailer_transport: "smtp://smartrelay.brightstarcorp.com",
+    nodemailer_transport: null,
 
     /**
      * A custom debugging function.
