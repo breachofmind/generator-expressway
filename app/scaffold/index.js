@@ -13,15 +13,13 @@ var app = expressway({
     rootPath: __dirname,
 });
 
-// Start the server if running the script with 'start'.
-if (process.argv[2] == "start")
+function onStart(url)
 {
-    app.start(function(url,app) {
-        // Boot google chrome if developing locally.
-        if (app.env == ENV_LOCAL && app.context == CXT_WEB) {
-            cp.exec(`open /Applications/Google\\ Chrome.app ${url.get()}`, function(err){});
-        }
-    });
+    if (app.env == ENV_LOCAL && app.context == CXT_WEB) {
+        cp.exec(`open /Applications/Google\\ Chrome.app ${url.get()}`, function(err){});
+    }
 }
+
+app.on('started', app.callFn(onStart));
 
 module.exports = app;
