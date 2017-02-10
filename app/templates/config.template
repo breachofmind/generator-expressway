@@ -1,3 +1,5 @@
+var path = require('path');
+
 /**
  * Main configuration file for the application.
  * @param system {object}
@@ -11,17 +13,22 @@ module.exports = {
      * @type Array<Function>
      */
     use: [
+        require('expressway-dev'),
         require('expressway/src/providers'),
         require('expressway/src/middlewares'),
         require('../app/controllers/IndexController'),
     ],
 
-
     /**
-     * The global environment setting.
-     * @type string ENV_LOCAL|ENV_DEV|ENV_PROD
+     * Livereload settings.
+     * @type Object
      */
-    env: ENV_LOCAL,
+    livereload: {
+        watch: [
+            path.resolve(__dirname, "../public/"),
+            path.resolve(__dirname, "../resources/views/"),
+        ],
+    },
 
     /**
      * The unique application key.
@@ -29,41 +36,6 @@ module.exports = {
      */
     appKey: "<%=appKey%>",
 
-    /**
-     * Debug setting.
-     * @type boolean
-     */
-    debug: false,
-
-    /**
-     * The database credentials.
-     * @type Object
-     */
-    db: {
-        driver: require('expressway/src/drivers/MongooseDriver'),
-        hostname: 'localhost',
-        database: 'expressway',
-        username: null,
-        password: null
-    },
-
-    /**
-     * The server url.
-     * @type string
-     */
-    url: "http://localhost",
-
-    /**
-     * The server port.
-     * @type number
-     */
-    port: 8081,
-
-    /**
-     * The server proxy url, if using a proxy.
-     * @type string|null
-     */
-    proxy: undefined,
 
     /**
      * Limit of records to return in the API.

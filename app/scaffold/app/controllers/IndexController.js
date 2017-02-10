@@ -15,8 +15,6 @@ class IndexController extends Controller
 
         // Add route-specific middleware.
         // this.middleware('index','CSRF')
-
-        this.defaults = [];
     }
 
     /**

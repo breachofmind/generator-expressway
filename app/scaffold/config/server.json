@@ -1,0 +1,8 @@
+{
+    "uid": "expressway",
+    "append": true,
+    "watch": true,
+    "sourceDir": "./",
+    "script": "bin/cli",
+    "args": ["start", "-p"]
+}

@@ -1,3 +1,5 @@
+var path = require('path');
+
 module.exports.routes = {
     middleware: [
         'Development',
@@ -11,5 +13,8 @@ module.exports.routes = {
     paths: [
         {"GET /": "IndexController.index"}
     ],
-    error: "NotFound"
+    error: "NotFound",
+    static: {
+        "/" : path.resolve(__dirname, "../public")
+    }
 };
