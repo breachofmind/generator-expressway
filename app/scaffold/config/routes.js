@@ -2,7 +2,6 @@ var path = require('path');
 
 module.exports.routes = {
     middleware: [
-        'Development',
         'Static',
         'Init',
         'ConsoleLogging',

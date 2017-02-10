@@ -38,8 +38,7 @@ var npmDev = [
     "sass-loader",
     "style-loader",
     "webpack",
-    "webpack-dev-middleware",
-    "webpack-hot-middleware"
+    "webpack-dev-server",
 ];
 
 
