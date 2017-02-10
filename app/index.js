@@ -9,7 +9,7 @@ const PACKAGES = [
     'react',
     'moment',
     'vue',
-    'bootstrap@4.0.0-alpha.5',
+    'bootstrap@4.0.0-alpha.6',
     'foundation-sites',
 ];
 
