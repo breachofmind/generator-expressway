@@ -93,6 +93,7 @@ module.exports = generators.Base.extend({
         cp('env.template',      'config/env.js',        answers);
         cp('config.template',   'config/config.js',     answers);
         cp('package.template',  'package.json',         answers);
+        cp('gitignore.template',  '.gitignore');
 
         cp('../scaffold');
         cp('../drivers/'+answers.driver, 'app/models');
