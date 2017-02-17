@@ -84,13 +84,6 @@ module.exports = {
     pretty_logging: false,
 
     /**
-     * Transport to use for nodemailer. By default, uses nodemailer-transport-stub.
-     * @example smtps://postmaster@MAILGUN_SANDBOX.mailgun.org:SMTP_PASSWORD@smtp.mailgun.org
-     * @type {Transport|string|null}
-     */
-    nodemailer_transport: null,
-
-    /**
      * A custom debugging function.
      * @injectable
      * @type Function

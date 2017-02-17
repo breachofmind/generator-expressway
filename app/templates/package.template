@@ -1,10 +1,18 @@
 {
-  "name": "<%=appName%>",
-  "version": "0.0.1",
-  "description": "<%=desc%>",
-  "main": "index.js",
-  "license": "ISC",
-  "scripts": {
-    "start" : "node index.js start"
-  }
+    "name": "<%=appName%>",
+    "version": "0.0.1",
+    "description": "<%=desc%>",
+    "main": "index.js",
+    "license": "ISC",
+    "scripts": {
+    "start" : "./bin/cli start"
+    },
+    "babel": {
+      "presets": [
+        "babel-preset-es2015"
+      ],
+      "ignore": [
+        "node_modules/*"
+      ]
+    },
 }

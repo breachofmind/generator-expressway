@@ -9,6 +9,9 @@ const PACKAGES = [
     'react',
     'moment',
     'vue',
+    'breachofmind/expressway-auth',
+    'breachofmind/expressway-rest',
+    'breachofmind/expressway-ashlee',
     'bootstrap@4.0.0-alpha.6',
     'foundation-sites',
 ];
@@ -26,9 +29,11 @@ const QUESTIONS = [
 ];
 
 var answers = {};
-var npmProd = [];
+var npmProd = [
+    "breachofmind/expressway"
+];
 var npmDev = [
-    "autoprefixer",
+    "breachofmind/expressway-dev",
     "babel-core",
     "babel-loader",
     "babel-preset-es2015",
@@ -66,16 +71,9 @@ module.exports = generators.Base.extend({
             answers.view_engine = answers.engine;
 
             if (answers.engine == 'grenade') {
+                npmProd.push('grenade');
                 answers.view_engine = "htm";
             }
-
-            answers.imports = [];
-
-            answers.packages.forEach(packageName => {
-                if (packageScripts[packageName]) {
-                    packageScripts[packageName] (this);
-                }
-            })
         });
     },
 
@@ -94,8 +92,7 @@ module.exports = generators.Base.extend({
         // Create the environment configuration file.
         cp('env.template',      'config/env.js',        answers);
         cp('config.template',   'config/config.js',     answers);
-        cp('package.template',  'package.json',             answers);
-        cp('base.scss.template','resources/scss/base.scss', answers);
+        cp('package.template',  'package.json',         answers);
 
         cp('../scaffold');
         cp('../drivers/'+answers.driver, 'app/models');
@@ -109,12 +106,12 @@ module.exports = generators.Base.extend({
     {
         npmProd = npmProd.concat(answers.packages);
 
-        pushIf(npmDev, 'watchify', onlyIfResolved('watchify'));
-        pushIf(npmDev, 'browserify', onlyIfResolved('browserify'));
-        pushIf(npmProd, 'breachofmind/expressway', onlyIfResolved('expressway'));
-        pushIf(npmProd, 'grenade', onlyIfResolved('grenade') && answers.engine == 'grenade');
-        pushIf(npmProd, answers.engine, ['ejs','pug','hbs'].indexOf(answers.engine) > -1);
-        pushIf(npmDev, ["vue-loader", "vue-template-compiler"], npmProd.indexOf('vue') > -1);
+        pushTo(npmProd, answers.engine)
+            .when(['ejs','pug','hbs'].indexOf(answers.engine) > -1);
+
+        // If vue is selected, add the webpack loaders.
+        pushTo(npmDev, ["vue-loader", "vue-template-compiler"])
+            .when(npmProd.indexOf('vue') > -1);
 
         this.npmInstall(npmProd, {save: true});
         this.npmInstall(npmDev, {saveDev: true});
@@ -126,7 +123,7 @@ module.exports = generators.Base.extend({
     end: function()
     {
         console.log('Done!');
-        console.log('npm run start')
+        console.log('npm run start');
     }
 });
 
@@ -136,29 +133,16 @@ module.exports = generators.Base.extend({
 // Utilities
 // --------------------------------------------------------------------
 
+function pushTo(arr, items) {
+    return {
+        when(condition) {
+            if (condition) {
+                arr = arr.concat(items);
+            }
+        }
+    }
+}
+
 function q(type,name,message,def,choices) {
     return {type:type, name:name, message:message, choices:choices,default:def}
 }
-
-function pushIf(to, push, expression) {
-    if (expression) to = to.concat(push);
-}
-
-function onlyIfResolved(packageName) {
-    try {
-        require.resolve(packageName);
-    } catch (e) {
-        return true;
-    }
-    return false;
-}
-
-var packageScripts = {
-    "foundation-sites" : function(yo,data) {
-        answers.imports.push(`@import "../../node_modules/foundation-sites/scss/foundation.scss";`);
-        answers.imports.push(`@include foundation-everything(true)`);
-    },
-    "bootstrap@4.0.0-alpha.5" : function(yo,data) {
-        answers.imports = [`@import "../../node_modules/bootstrap/scss/bootstrap.scss";`]
-    }
-};
