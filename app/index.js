@@ -1,4 +1,4 @@
-var generators = require('yeoman-generator');
+var Generator = require('yeoman-generator');
 var shortid = require('shortid');
 var _ = require('lodash');
 
@@ -19,7 +19,7 @@ const PACKAGES = [
 const QUESTIONS = [
     q("input",      "desc",     "Application description", "Expressway Application"),
     q("input",      "appKey",   "Unique application key",  shortid.generate()),
-    q("input",      "url",      "URL",                     "http://localhost"),
+    //q("input",      "url",      "URL",                     "http://localhost"),
     q("input",      "port",     "Port",                    8081),
     q("list",       "engine",   "Which View Engine?",      "grenade", VIEW_ENGINES),
     //q("list",       "driver",   "Which DB Driver?",        "mongodb", DB_DRIVERS),
@@ -37,31 +37,31 @@ var npmDev = [
     "babel-core",
     "babel-loader",
     "babel-preset-es2015",
+    "style-loader",
     "css-loader",
     "node-sass",
     "postcss-loader",
     "sass-loader",
-    "style-loader",
     "webpack",
     "webpack-dev-server",
 ];
 
 
-module.exports = generators.Base.extend({
+module.exports = class ExpresswayGenerator extends Generator {
 
-    constructor: function()
+    constructor(args,opts)
     {
-        generators.Base.apply(this,arguments);
+        super(args,opts);
 
         this.argument('appName', {type:String, required:true});
 
         this.appName = _.camelCase(this.appName);
-    },
+    }
 
     /**
     * Get the user configuration info.
     */
-    prompting: function()
+    prompting()
     {
         return this.prompt(QUESTIONS).then(output => {
 
@@ -75,12 +75,12 @@ module.exports = generators.Base.extend({
                 answers.view_engine = "htm";
             }
         });
-    },
+    }
 
     /**
      * Copy the scaffold files to the user directory.
      */
-    writing: function()
+    writing()
     {
         var cp = (from,to,data) => {
             from = this.templatePath(from);
@@ -96,14 +96,14 @@ module.exports = generators.Base.extend({
         cp('gitignore.template',  '.gitignore');
 
         cp('../scaffold');
-        cp('../drivers/'+answers.driver, 'app/models');
+        //cp('../drivers/'+answers.driver, 'app/models');
         cp('../engines/'+answers.engine, 'resources/views');
-    },
+    }
 
     /**
      * Install NPM packages
      */
-    install: function()
+    install()
     {
         npmProd = npmProd.concat(answers.packages);
 
@@ -114,19 +114,16 @@ module.exports = generators.Base.extend({
         pushTo(npmDev, ["vue-loader", "vue-template-compiler"])
             .when(npmProd.indexOf('vue') > -1);
 
-        this.npmInstall(npmProd, {save: true});
-        this.npmInstall(npmDev, {saveDev: true});
-    },
+        this.yarnInstall(npmProd);
+        this.yarnInstall(npmDev, {dev: true});
+    }
 
-    /**
-     * Seed and finish.
-     */
-    end: function()
+    end()
     {
         console.log('Done!');
         console.log('npm run start');
     }
-});
+};
 
 
 

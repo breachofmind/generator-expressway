@@ -29,6 +29,6 @@
   "dependencies": {
     "lodash": "^4.16.4",
     "shortid": "^2.2.6",
-    "yeoman-generator": "^0.24.1"
+    "yeoman-generator": "^1.1.1"
   }
 }
